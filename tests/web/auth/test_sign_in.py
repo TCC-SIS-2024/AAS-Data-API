@@ -2,6 +2,7 @@ from unittest.async_case import IsolatedAsyncioTestCase
 from server import app
 import httpx
 
+
 class AuthenticationTestCase(IsolatedAsyncioTestCase):
 
     def setUp(self):
