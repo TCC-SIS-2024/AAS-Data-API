@@ -9,6 +9,11 @@ readme = "README.md"
 python = "^3.11"
 fastapi = {extras = ["all"], version = "^0.115.0"}
 uvicorn = {extras = ["standard"], version = "^0.30.6"}
+pyjwt = "^2.9.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-dotenv = "^1.0.1"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.35"}
+asyncpg = "^0.29.0"
 
 
 [tool.poetry.group.dev.dependencies]
