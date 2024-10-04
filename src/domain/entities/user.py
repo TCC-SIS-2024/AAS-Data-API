@@ -1,20 +1,25 @@
 import uuid
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
+from pydantic.fields import Field
+from pydantic.networks import EmailStr
 
-class UserBase(BaseModel):
-    """
-    User model representing a user in the application.
-    """
-    username: str
-    email: str
 
-class UserOutput(UserBase):
+class UserInput(BaseModel):
+    """
+    User model representing a user in the application with additional fields for input.
+    """
+    username: str = Field(max_length=100)
+    email: EmailStr
+    password: str = Field(max_length=100)
+
+class UserOutput(UserInput):
     """
     User model representing a user in the application with additional fields for output.
     """
-    id: uuid
+    id: UUID
     created_at: datetime
     updated_at: datetime
 
@@ -25,9 +30,3 @@ class UserOutput(UserBase):
             uuid: lambda v: str(v)
         },
     )
-
-class UserInput(UserBase):
-    """
-    User model representing a user in the application with additional fields for input.
-    """
-    pass
