@@ -2,10 +2,17 @@ import os
 from dataclasses import dataclass
 from datetime import timedelta
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 
 from src.adapters.libs.bcrypt import BcryptAdapter
 from src.domain.entities.user import UserOutput
+
+class SignInFields(BaseModel):
+    """
+    SignInFields model for user sign
+    """
+    email: EmailStr = Field(min_length=1, max_length=100)
+    password: str = Field(min_length=1, max_length=100)
 
 
 @dataclass

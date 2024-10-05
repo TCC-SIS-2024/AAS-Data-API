@@ -27,7 +27,15 @@ async def sign_in(
     """
 
     response = await use_case.execute(form_data)
-    return JSONResponse(content=response.payload, status_code=response.status_code)
+    status_code = response.status_code
+
+    if response.status_code == 200:
+        response = response.payload
+    else:
+        response = response.model_dump()
+
+
+    return JSONResponse(content=response, status_code=status_code)
 
 @auth_router.post('/sign-up/', summary='Route for registering user in the System.')
 async def sign_up(

@@ -1,9 +1,9 @@
 import traceback
 
 from fastapi.security import OAuth2PasswordRequestForm
-
+from pydantic_core import ValidationError
 from src.application.interfaces.usecase import UseCase
-from src.domain.entities.sign_in import SignIn
+from src.domain.entities.sign_in import SignIn, SignInFields
 from src.domain.entities.user import UserOutput
 from src.domain.interfaces.repositories import IUserRepository
 from src.web.http_helper import HttpHelper, HttpResponse
@@ -26,7 +26,9 @@ class SignInUseCase(UseCase):
         :return: It returns a JWT access token
         """
         try:
-            sign_in = SignIn(form_data.username, form_data.password)
+
+            fields = SignInFields(email=form_data.username, password=form_data.password)
+            sign_in = SignIn(fields.email, fields.password)
 
             user: UserOutput = await self.repository.find_by_email(sign_in.email)
 
@@ -41,6 +43,7 @@ class SignInUseCase(UseCase):
             token: dict = sign_in.generate_access_token(user)
 
             return HttpHelper.ok(token)
+        except ValidationError as e:
+            return HttpHelper.unprocessable_entity(Exception(e))
         except Exception as e:
-            traceback.print_exc()
             return HttpHelper.internal_server_error(Exception(e))
