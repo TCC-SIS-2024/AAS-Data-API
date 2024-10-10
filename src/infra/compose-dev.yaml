@@ -6,3 +6,15 @@ services:
       - '5432:5432'
     env_file:
       - '../../.env.development'
+
+  monitoring-api:
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    container_name: monitoring-api
+    ports:
+      - '8000:8000'
+    env_file:
+      - '../../.env.development'
+    depends_on:
+      - monitoring-api-database

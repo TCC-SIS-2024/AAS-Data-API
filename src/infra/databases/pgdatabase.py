@@ -12,8 +12,8 @@ url = URL.create(
     drivername="postgresql+asyncpg",
     username=os.environ.get('POSTGRES_USER', None),
     password=os.environ.get('POSTGRES_PASSWORD', None),
-    host="0.0.0.0",
-    port=5432,
+    host=os.environ.get('POSTGRES_HOST', None),
+    port=int(os.environ.get('POSTGRES_PORT', None)),
     database=os.environ.get('POSTGRES_DB', None),
 )
 
