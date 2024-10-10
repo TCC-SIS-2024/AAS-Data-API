@@ -1,13 +1,12 @@
 from datetime import datetime
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import pytest
 import httpx
 from server import app
 import pytest_asyncio
 from src.adapters.repositories.user_repository import UserRepository
-from src.domain.entities.user import UserInput
-from src.web.dependencies import pg_engine, jwt_encoder
+from src.web.dependencies import pg_engine
 
 @pytest_asyncio.fixture(loop_scope="package")
 async def setup_fake_user():

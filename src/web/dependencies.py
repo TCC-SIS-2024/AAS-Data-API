@@ -30,7 +30,7 @@ def jwt_encoder() -> BcryptAdapter:
     return BcryptAdapter()
 
 def get_token(
-    token: Annotated[str, Depends(OAuth2PasswordBearer(tokenUrl="auth/sign-in"))],
+    token: Annotated[str, Depends(OAuth2PasswordBearer(tokenUrl="auth/sign-in/"))],
 ) -> str:
     """
     function that injects the dependencies for token
