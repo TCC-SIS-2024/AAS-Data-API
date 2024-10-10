@@ -11,9 +11,9 @@ class UserInput(BaseModel):
     """
     User model representing a user in the application with additional fields for input.
     """
-    username: str = Field(max_length=100)
+    username: str = Field(max_length=100, min_length=5)
     email: EmailStr
-    password: str = Field(max_length=100)
+    password: str = Field(max_length=100, min_length=6)
 
 class UserOutput(UserInput):
     """
