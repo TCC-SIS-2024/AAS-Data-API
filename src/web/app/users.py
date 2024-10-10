@@ -23,3 +23,10 @@ async def get_user_info(
 
     response = await use_case.execute(token)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
+
+@users_router.get('/', summary='Route for getting user information.')
+async def get_users(
+        token: Annotated[str, Depends(get_token)],
+        use_case: Annotated[UsersMeUseCase, Depends(get_current_user_use_case)]
+):
+    ...

@@ -24,3 +24,10 @@ class IUserRepository(ABC):
         :return: a user information
         """
         raise NotImplemented()
+
+    @abstractmethod
+    async def delete_all(self):
+        """
+        This abstract method is responsible for deleting all users on the database.
+        """
+        raise NotImplemented()

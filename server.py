@@ -1,11 +1,13 @@
 import uvicorn
 from fastapi import FastAPI
-from src.infra.databases.pgdatabase import Base, engine
+from src.web.app.asset_administration_shells import asset_administration_shells_router
+from src.web.app.histories import history_router
 from src.web.app.users import users_router
 from src.web.auth.auth import auth_router
 
 app = FastAPI(
-    title="AAS Data API"
+    title="AAS Data API",
+    redirect_slashes=False
 )
 
 
@@ -19,6 +21,8 @@ async def startup():
     ...
 
 app.include_router(auth_router)
+app.include_router(asset_administration_shells_router)
+app.include_router(history_router)
 app.include_router(users_router)
 app.add_event_handler('startup', startup)
 

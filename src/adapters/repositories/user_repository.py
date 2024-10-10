@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, delete
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
 
 from src.domain.entities.user import UserOutput, UserInput
@@ -59,6 +59,24 @@ class UserRepository(IUserRepository):
                     return inserted_user
 
                 return None
+        except:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+    async def delete_all(self):
+        """
+        Implementation to delete all data in database, used for tests only.
+        :return:
+        """
+
+        try:
+            session = async_sessionmaker(self.pg_engine, autoflush=False)
+            async with session() as session:
+                smtm = delete(User)
+                await session.execute(smtm)
+                await session.commit()
         except:
             await session.rollback()
             raise

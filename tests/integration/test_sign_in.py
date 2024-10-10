@@ -1,118 +1,154 @@
-from unittest.async_case import IsolatedAsyncioTestCase
-from server import app
+import pytest
 import httpx
-from sqlalchemy import delete, insert
-from sqlalchemy.ext.asyncio import async_sessionmaker
-from src.adapters.libs.bcrypt import BcryptAdapter
-from src.web.dependencies import pg_engine
-from src.infra.databases.pgdatabase import User
+from server import app
+import pytest_asyncio
+from src.adapters.repositories.user_repository import UserRepository
+from src.domain.entities.user import UserInput
+from src.web.dependencies import pg_engine, jwt_encoder
 
+@pytest_asyncio.fixture(loop_scope='module')
+async def setup_fake_user():
+    engine = pg_engine()
+    encoder = jwt_encoder()
+    repository = UserRepository(engine)
+    await repository.delete_all()
+    password = encoder.get_password_hash('mock123')
+    await repository.create(
+        UserInput(username='mock_user', email='mock@email.com', password=password)
+    )
 
-class AuthenticationTestCase(IsolatedAsyncioTestCase):
-
-    def get_client(self):
-        return httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver")
-
-    def setUp(self):
-        self.encoder = BcryptAdapter()
-
-    async def asyncSetUp(self):
-        """
-        Set up resources before each test. This includes inserting mock user data.
-        """
-        password = self.encoder.get_password_hash('mock_password')
-        engine = pg_engine()
-        session = async_sessionmaker(engine)
-        async with session() as session:
-            # Delete existing users
-            await session.execute(delete(User))
-
-            # Insert mock user
-            stmt = insert(User).values(
-                username="mock_user",
-                email="mock@email.com",
-                password=password,
-            )
-            await session.execute(stmt)
-            await session.commit()
-
-
-    async def test_authentication_use_cases(self):
-
-        data = {
-            "username": 'mock@email.com',
-            "password": 'mock_password'
-        }
-
-        client = self.get_client()
-        async with client as client:
-            response = await client.post('/auth/sign-in/', data=data)
-            self.assertEqual(response.status_code, 200)
-            self.assertIn('access_token', response.json())
-            self.assertIn('token_type', response.json())
-            self.assertEqual('bearer', response.json()['token_type'])
-
-        data = {
-            "username": 'other@email.com',
-            "password": 'other'
-        }
-
-        client = self.get_client()
-        async with client as client:
-            response = await client.post('/auth/sign-in/', data=data)
-            self.assertEqual(response.status_code, 404)
-
-        data = {
-            "username": '',
-            "password": ''
-        }
-
-        client = self.get_client()
-        async with client as client:
-            response = await client.post('/auth/sign-in/', data=data)
-            self.assertEqual(response.status_code, 422)
-
-        data = {
-            "username": 'lucas@email.com',
-        }
-
-        client = self.get_client()
-        async with client as client:
-            response = await client.post('/auth/sign-in/', data=data)
-            self.assertEqual(response.status_code, 422)
-
-        data = {
-            "username": 123123,
-            "password": 1231
-        }
-
-        client = self.get_client()
-        async with client as client:
-            response = await client.post('/auth/sign-in/', data=data)
-            self.assertEqual(response.status_code, 422)
-
-        data = {
+@pytest.mark.asyncio(loop_scope="module")
+async def test_ensure_sign_in_returns_200(setup_fake_user):
+    http_client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    )
+    async with http_client as client:
+        form = {
             "username": "mock@email.com",
-            "password": "DROP DATABASE users"
+            "password": "mock123"
         }
 
-        client = self.get_client()
-        async with client as client:
-            response = await client.post('/auth/sign-in/', data=data)
-            self.assertEqual(response.status_code, 401)
+        response = await client.post("/auth/sign-in/", data=form)
 
-        data = {
+    assert response.status_code == 200
+
+    response_json = response.json()
+    assert 'access_token' in response_json
+    assert 'token_type' in response_json
+
+@pytest.mark.asyncio(loop_scope="module")
+async def test_ensure_sign_in_returns_404(setup_fake_user):
+    http_client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    )
+    async with http_client as client:
+        form = {
+            "username": "mock_other@email.com",
+            "password": "mock123"
+        }
+
+        response = await client.post("/auth/sign-in/", data=form)
+
+    assert response.status_code == 404
+    response_json = response.json()
+    assert response_json['payload'] == 'User not found!'
+
+@pytest.mark.asyncio(loop_scope="module")
+async def test_ensure_sign_in_returns_401(setup_fake_user):
+    http_client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    )
+    async with http_client as client:
+        form = {
             "username": "mock@email.com",
-            "password": "oi7gl"
+            "password": "mock1232"
         }
 
-        client = self.get_client()
-        async with client as client:
-            response = await client.post('/auth/sign-in/', data=data)
-            self.assertEqual(response.status_code, 401)
+        response = await client.post("/auth/sign-in/", data=form)
 
+    assert response.status_code == 401
+    response_json = response.json()
+    assert response_json['payload'] == 'Invalid credentials'
 
+@pytest.mark.asyncio(loop_scope="module")
+async def test_ensure_sign_in_returns_422(setup_fake_user):
+    http_client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    )
+    async with http_client as client:
+        form = {
+            "username": "mock",
+            "password": "mock1232"
+        }
 
+        response = await client.post("/auth/sign-in/", data=form)
 
-    def tearDown(self):
-        self.client = None
+    assert response.status_code == 422
+
+@pytest.mark.asyncio(loop_scope="module")
+async def test_ensure_sign_in_returns_422_with_no_email(setup_fake_user):
+    http_client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    )
+    async with http_client as client:
+        form = {
+            "username": "mock",
+            "password": None
+        }
+
+        response = await client.post("/auth/sign-in/", data=form)
+
+    assert response.status_code == 422
+
+@pytest.mark.asyncio(loop_scope="module")
+async def test_ensure_sign_in_returns_422_with_no_pass(setup_fake_user):
+    http_client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    )
+    async with http_client as client:
+        form = {
+            "username": None,
+            "password": "234234"
+        }
+
+        response = await client.post("/auth/sign-in/", data=form)
+
+    assert response.status_code == 422
+
+@pytest.mark.asyncio(loop_scope="module")
+async def test_ensure_sign_in_returns_422_with_empty_email(setup_fake_user):
+    http_client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    )
+    async with http_client as client:
+        form = {
+            "username": "",
+            "password": "234234"
+        }
+
+        response = await client.post("/auth/sign-in/", data=form)
+
+    assert response.status_code == 422
+
+@pytest.mark.asyncio(loop_scope="module")
+async def test_ensure_sign_in_returns_422_with_empty_password(setup_fake_user):
+    http_client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    )
+    async with http_client as client:
+        form = {
+            "username": "teste@email.com",
+            "password": ""
+        }
+
+        response = await client.post("/auth/sign-in/", data=form)
+
+    assert response.status_code == 422
