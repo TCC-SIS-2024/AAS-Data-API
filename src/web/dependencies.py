@@ -5,15 +5,25 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from src.adapters.libs.bcrypt import BcryptAdapter
+from src.adapters.repositories.system_repository import SystemRepository
 from src.adapters.repositories.user_repository import UserRepository
 from src.application.usecases.sign_in import SignInUseCase
 from src.application.usecases.sign_up import SignUpUseCase
+from src.application.usecases.system_status import SystemStatusUseCase
 from src.application.usecases.users_me import UsersMeUseCase
 from src.infra.databases.pgdatabase import engine as postgres_engine
 
 
 def pg_engine() -> AsyncEngine:
     return postgres_engine
+
+
+def system_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
+    """
+    function that injects the dependencies for SystemRepository
+    """
+
+    return SystemRepository(engine)
 
 def user_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
     """
@@ -65,3 +75,10 @@ def sign_up_use_case(
     """
 
     return SignUpUseCase(repository, encoder)
+
+def system_use_case(repository: Annotated[SystemRepository, Depends(system_repository)]):
+    """
+    function that injects the dependencies for SystemUseCase
+    """
+
+    return SystemStatusUseCase(repository)
