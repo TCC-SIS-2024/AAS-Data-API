@@ -29,7 +29,7 @@ async def test_ensure_sign_in_returns_200(setup_fake_user):
             "password": "mock123"
         }
 
-        response = await client.post("/auth/sign-in/", data=form)
+        response = await client.post("api/v1/auth/sign-in/", data=form)
 
     assert response.status_code == 200
 
@@ -49,7 +49,7 @@ async def test_ensure_sign_in_returns_404(setup_fake_user):
             "password": "mock123"
         }
 
-        response = await client.post("/auth/sign-in/", data=form)
+        response = await client.post("api/v1/auth/sign-in/", data=form)
 
     assert response.status_code == 404
     response_json = response.json()
@@ -67,7 +67,7 @@ async def test_ensure_sign_in_returns_401(setup_fake_user):
             "password": "mock1232"
         }
 
-        response = await client.post("/auth/sign-in/", data=form)
+        response = await client.post("api/v1/auth/sign-in/", data=form)
 
     assert response.status_code == 401
     response_json = response.json()
@@ -85,7 +85,7 @@ async def test_ensure_sign_in_returns_422(setup_fake_user):
             "password": "mock1232"
         }
 
-        response = await client.post("/auth/sign-in/", data=form)
+        response = await client.post("api/v1/auth/sign-in/", data=form)
 
     assert response.status_code == 422
 
@@ -101,7 +101,7 @@ async def test_ensure_sign_in_returns_422_with_no_email(setup_fake_user):
             "password": None
         }
 
-        response = await client.post("/auth/sign-in/", data=form)
+        response = await client.post("api/v1/auth/sign-in/", data=form)
 
     assert response.status_code == 422
 
@@ -117,7 +117,7 @@ async def test_ensure_sign_in_returns_422_with_no_pass(setup_fake_user):
             "password": "234234"
         }
 
-        response = await client.post("/auth/sign-in/", data=form)
+        response = await client.post("api/v1/auth/sign-in/", data=form)
 
     assert response.status_code == 422
 
@@ -133,7 +133,7 @@ async def test_ensure_sign_in_returns_422_with_empty_email(setup_fake_user):
             "password": "234234"
         }
 
-        response = await client.post("/auth/sign-in/", data=form)
+        response = await client.post("api/v1/auth/sign-in/", data=form)
 
     assert response.status_code == 422
 
@@ -149,6 +149,6 @@ async def test_ensure_sign_in_returns_422_with_empty_password(setup_fake_user):
             "password": ""
         }
 
-        response = await client.post("/auth/sign-in/", data=form)
+        response = await client.post("api/v1/auth/sign-in/", data=form)
 
     assert response.status_code == 422

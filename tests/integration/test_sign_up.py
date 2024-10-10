@@ -28,7 +28,7 @@ async def test_ensure_sign_up_returns_200(setup_fake_user):
             "password": "mock123",
         }
 
-        response = await client.post("/auth/sign-up/", json=payload)
+        response = await client.post("api/v1/auth/sign-up/", json=payload)
 
     assert response.status_code == 200
     response_json = response.json()
@@ -65,7 +65,7 @@ async def test_ensure_sign_up_returns_422(setup_fake_user):
             "password": "mock123",
         }
 
-        response = await client.post("/auth/sign-up/", json=payload)
+        response = await client.post("api/v1/auth/sign-up/", json=payload)
 
     assert response.status_code == 422
 
@@ -83,7 +83,7 @@ async def test_ensure_sign_up_returns_422_no_email(setup_fake_user):
             "password": "mock123",
         }
 
-        response = await client.post("/auth/sign-up/", json=payload)
+        response = await client.post("api/v1/auth/sign-up/", json=payload)
 
     assert response.status_code == 422
 
@@ -101,7 +101,7 @@ async def test_ensure_sign_up_returns_422_no_password(setup_fake_user):
             "password": "",
         }
 
-        response = await client.post("/auth/sign-up/", json=payload)
+        response = await client.post("api/v1/auth/sign-up/", json=payload)
 
     assert response.status_code == 422
 
@@ -115,6 +115,6 @@ async def test_ensure_sign_up_returns_422_no_fields(setup_fake_user):
 
         payload = {}
 
-        response = await client.post("/auth/sign-up/", json=payload)
+        response = await client.post("api/v1/auth/sign-up/", json=payload)
 
     assert response.status_code == 422

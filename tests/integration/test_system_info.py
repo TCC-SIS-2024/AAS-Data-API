@@ -10,7 +10,7 @@ async def test_system_status():
     )
     async with http_client as client:
 
-        response = await client.get("/system/status/")
+        response = await client.get("api/v1/system/status/")
 
         assert response.status_code == 200
         response_json = response.json()

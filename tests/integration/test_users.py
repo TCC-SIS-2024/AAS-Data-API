@@ -42,7 +42,7 @@ async def test_ensure_sign_in_returns_200(setup_fake_user):
     )
     async with http_client as client:
 
-        response = await client.get("/users/me/", headers={
+        response = await client.get("api/v1/users/me/", headers={
             'Authorization': f'Bearer {token}'
         })
 
@@ -68,7 +68,7 @@ async def test_ensure_sign_in_returns_401(setup_fake_user):
     )
     async with http_client as client:
 
-        response = await client.get("/users/me/", headers={
+        response = await client.get("api/v1/users/me/", headers={
             'Authorization': f'Bearer 9E7R10rxqhVRjgjrUhaJ6LDhShUPRXLAWPmK7hPjewvAxZVkw9rDK7D3PcbBT5oQ'
         })
 

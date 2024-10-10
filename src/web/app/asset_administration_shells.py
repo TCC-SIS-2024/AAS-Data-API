@@ -1,8 +1,13 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Depends
+
+from src.web.dependencies import get_token
 
 asset_administration_shells_router = APIRouter(
     prefix="/asset-administration-shells",
-    tags=["Asset Administration Shells"]
+    tags=["Asset Administration Shells"],
+    dependencies=[
+        Depends(get_token)
+    ]
 )
 
 @asset_administration_shells_router.get(
