@@ -1,14 +1,12 @@
 import pytest
 import httpx
 from server import app
-import pytest_asyncio
-
 from src.adapters.repositories.user_repository import UserRepository
 from src.application.usecases.sign_in import SignInUseCase
 from src.domain.entities.user import UserInput
 from src.web.dependencies import pg_engine, jwt_encoder
+import pytest_asyncio
 from fastapi.security import OAuth2PasswordRequestForm
-
 
 @pytest_asyncio.fixture(loop_scope="package")
 async def setup_fake_user():
@@ -33,7 +31,7 @@ async def setup_fake_user():
     yield token
 
 @pytest.mark.asyncio(loop_scope="package")
-async def test_system_status(setup_fake_user):
+async def test_ensure_creation_role_returns_200(setup_fake_user):
     token = setup_fake_user
     http_client = httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
@@ -41,18 +39,27 @@ async def test_system_status(setup_fake_user):
     )
     async with http_client as client:
 
-        response = await client.get("api/v1/system/status/", headers={
-            "Authorization": f"Bearer {token}"
-        })
+        role_content = {
+            "name": "admin",
+            "users": [],
+            "permissions": []
+        }
+
+        response = await client.post("api/v1/roles/", headers={
+            'Authorization': f'Bearer {token}'
+        }, json=role_content)
 
         assert response.status_code == 200
         response_json = response.json()
 
-        version = response_json['payload']['dependencies']['databases'][0]['version']
-        name = response_json['payload']['dependencies']['databases'][0]['name']
-        max_connections = response_json['payload']['dependencies']['databases'][0]['max_connections']
-        opened_connections = response_json['payload']['dependencies']['databases'][0]['opened_connections']
-        assert version == '16.4'
-        assert name == 'postgres'
-        assert max_connections == 100
-        assert opened_connections is not None
+        assert 'status_code' in response_json
+        assert 'payload' in response_json
+
+        payload = response_json['payload']
+
+        assert 'id' in payload
+        assert 'name' in payload
+        assert 'created_at' in payload
+        assert 'updated_at' in payload
+        assert 'users' in payload
+        assert 'permissions' in payload

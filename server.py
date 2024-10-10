@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from src.infra.databases.pgdatabase import Base
 from src.web.app.asset_administration_shells import asset_administration_shells_router
 from src.web.app.histories import history_router
+from src.web.app.roles import roles_router
 from src.web.app.system import system_router
 from src.web.app.users import users_router
 from src.web.auth.auth import auth_router
@@ -16,20 +17,22 @@ app = FastAPI(
 
 
 async def startup():
-    # engine = pg_engine()
-    # async with engine.begin() as conn:
-    #     await conn.run_sync(Base.metadata.drop_all)
-    #     await conn.run_sync(Base.metadata.create_all)
-    #
-    # await engine.dispose()
-    ...
+    engine = pg_engine()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+
+    await engine.dispose()
 
 api_version = '/api/v1'
 app.include_router(auth_router, prefix=api_version)
 app.include_router(asset_administration_shells_router, prefix=api_version)
 app.include_router(history_router, prefix=api_version)
 app.include_router(system_router, prefix=api_version)
+
+app.include_router(roles_router, prefix=api_version)
 app.include_router(users_router, prefix=api_version)
+
 app.add_event_handler('startup', startup)
 
 if __name__ == '__main__':
