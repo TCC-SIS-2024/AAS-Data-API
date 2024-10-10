@@ -1,6 +1,8 @@
 # AAS-Data-API
 A FastAPI service focused on access data from an AAS and show through a dashboard
 
+![img_1.png](img_1.png)
+
 ## Endpoints
 
 #### GET /healthcheck
