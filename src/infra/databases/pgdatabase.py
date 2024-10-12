@@ -39,7 +39,7 @@ class Role(Base):
     __tablename__ = 'roles'
     id: Mapped[str] = MappedColumn(Uuid(), default=uuid.uuid4, unique=True, nullable=False, primary_key=True)
     name: Mapped[str] = MappedColumn(String(255), unique=True)
-    permission_id: Mapped[str] = MappedColumn(ForeignKey("roles.id"), nullable=True)
+    permission_id: Mapped[str] = MappedColumn(ForeignKey("permissions.id"), nullable=True)
     permission: Mapped['Permission'] = relationship('Permission', back_populates='roles')
     created_at: Mapped[datetime] = MappedColumn(DateTime(timezone=True), default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = MappedColumn(DateTime(timezone=True), default=func.now(), onupdate=func.now(),

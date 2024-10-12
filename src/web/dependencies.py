@@ -5,8 +5,12 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from src.adapters.libs.bcrypt import BcryptAdapter
+from src.adapters.repositories.permission_repository import PermissionRepository
+from src.adapters.repositories.role_repository import RoleRepository
 from src.adapters.repositories.system_repository import SystemRepository
 from src.adapters.repositories.user_repository import UserRepository
+from src.application.usecases.create_permission import CreatePermissionUseCase
+from src.application.usecases.create_role import CreateRoleUseCase
 from src.application.usecases.sign_in import SignInUseCase
 from src.application.usecases.sign_up import SignUpUseCase
 from src.application.usecases.system_status import SystemStatusUseCase
@@ -31,6 +35,20 @@ def user_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
     """
 
     return UserRepository(engine)
+
+def role_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
+    """
+    function that injects the dependencies for RoleRepository
+    """
+
+    return RoleRepository(engine)
+
+def permission_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
+    """
+    function that injects the dependencies for PermissionRepository
+    """
+
+    return PermissionRepository(engine)
 
 def jwt_encoder() -> BcryptAdapter:
     """
@@ -82,3 +100,17 @@ def system_use_case(repository: Annotated[SystemRepository, Depends(system_repos
     """
 
     return SystemStatusUseCase(repository)
+
+def create_role_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
+    """
+    function that injects the dependencies for CreateRoleUseCase
+    """
+
+    return CreateRoleUseCase(repository)
+
+def create_permission_use_case(repository: Annotated[PermissionRepository, Depends(permission_repository)]):
+    """
+    function that injects the dependencies for CreatPermissionUseCase
+    """
+
+    return CreatePermissionUseCase(repository)

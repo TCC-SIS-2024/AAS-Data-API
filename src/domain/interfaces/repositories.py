@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from src.domain.entities.permission import PermissionInput, PermissionOutput
+from src.domain.entities.role import RoleInput, RoleOutput
 from src.domain.entities.user import UserOutput, UserInput
 
 
@@ -29,6 +31,34 @@ class IUserRepository(ABC):
     async def delete_all(self):
         """
         This abstract method is responsible for deleting all users on the database.
+        """
+        raise NotImplemented()
+
+class IRoleRepository(ABC):
+    """
+    Interface responsible for RoleRepository main methods.
+    """
+
+    @abstractmethod
+    async def create(self, role_input: RoleInput) -> RoleOutput:
+        """
+        This abstract method is responsible for storing the role on the database and return it information.
+        :param role_input:
+        :return: a role information
+        """
+        raise NotImplemented()
+
+class IPermissionRepository(ABC):
+    """
+    Interface responsible for RoleRepository main methods.
+    """
+
+    @abstractmethod
+    async def create(self, permission_input: PermissionInput) -> PermissionOutput:
+        """
+        This abstract method is responsible for storing the role on the database and return it information.
+        :param permission_input:
+        :return: a role information
         """
         raise NotImplemented()
 
