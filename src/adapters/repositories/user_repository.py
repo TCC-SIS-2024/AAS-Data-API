@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import select, insert, delete
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
 
@@ -11,6 +13,48 @@ class UserRepository(IUserRepository):
 
     def __init__(self, pg_engine: AsyncEngine):
         self.pg_engine: AsyncEngine = pg_engine
+
+    async def count_all_users(self):
+        """
+        Implementation of abstract method `count_all_users` which will count all users
+        :return: number of users fetched in database
+        """
+
+        session = async_sessionmaker(self.pg_engine)
+
+        async with session() as session:
+            smtm = select(User)
+            result = await session.execute(smtm)
+            users_qtd = len(result.scalars().fetchall())
+            return users_qtd
+
+        return None
+
+    async def find_all(self, page: int = 1, page_size: int = 10):
+        """
+        Implementation of abstract method `find_all` which will find all users
+        :return:  fetched in database
+        """
+
+        session = async_sessionmaker(self.pg_engine)
+
+        async with session() as session:
+
+            offset = (page - 1) * page_size
+
+            smtm = select(User).limit(page_size).offset(offset)
+
+            result = await session.execute(smtm)
+            fetched_users = result.scalars()
+            users: List[UserOutput] = []
+
+            for user in fetched_users.fetchall():
+                users.append(UserOutput(**user.__dict__))
+
+            return users
+
+        return None
+
 
     async def find_by_email(self, email: str) -> UserOutput | None:
         """

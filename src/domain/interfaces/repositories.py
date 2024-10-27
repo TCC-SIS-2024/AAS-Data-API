@@ -9,6 +9,23 @@ class IUserRepository(ABC):
     """
     Interface responsible for UserRepository main methods.
     """
+
+    @abstractmethod
+    async def count_all_users(self):
+        """
+        This abstract method is responsible for counting all users on the database.
+        :return: number of users
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def find_all(self, page: int, page_size: int):
+        """
+        This abstract method is responsible for finding all users on the database.
+        :return:
+        """
+        raise NotImplementedError()
+
     @abstractmethod
     async def find_by_email(self, email: str) -> UserOutput | None:
         """

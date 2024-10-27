@@ -11,6 +11,7 @@ from src.adapters.repositories.system_repository import SystemRepository
 from src.adapters.repositories.user_repository import UserRepository
 from src.application.usecases.create_permission import CreatePermissionUseCase
 from src.application.usecases.create_role import CreateRoleUseCase
+from src.application.usecases.find_all_users import FindAllUsersUseCase
 from src.application.usecases.sign_in import SignInUseCase
 from src.application.usecases.sign_up import SignUpUseCase
 from src.application.usecases.system_status import SystemStatusUseCase
@@ -76,6 +77,15 @@ def get_current_user_use_case(
     """
 
     return UsersMeUseCase(repository, encoder)
+
+def get_all_users_use_case(
+        repository: Annotated[UserRepository, Depends(user_repository)]
+):
+    """
+    function that injects the dependencies for findAllUsersUseCase
+    """
+
+    return FindAllUsersUseCase(repository)
 
 def sign_in_use_case(repository: Annotated[UserRepository, Depends(user_repository)]) -> SignInUseCase:
     """
