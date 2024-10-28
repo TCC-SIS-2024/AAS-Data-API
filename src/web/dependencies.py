@@ -5,12 +5,15 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from src.adapters.libs.bcrypt import BcryptAdapter
+from src.adapters.repositories.asset_administration_shell_repository import AssetAdministrationShellRepository
 from src.adapters.repositories.permission_repository import PermissionRepository
 from src.adapters.repositories.role_repository import RoleRepository
 from src.adapters.repositories.system_repository import SystemRepository
 from src.adapters.repositories.user_repository import UserRepository
+from src.application.usecases.create_asset_administration_shell import CreateAssetAdministrationShellUseCase
 from src.application.usecases.create_permission import CreatePermissionUseCase
 from src.application.usecases.create_role import CreateRoleUseCase
+from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
 from src.application.usecases.find_all_users import FindAllUsersUseCase
 from src.application.usecases.sign_in import SignInUseCase
 from src.application.usecases.sign_up import SignUpUseCase
@@ -43,6 +46,13 @@ def role_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
     """
 
     return RoleRepository(engine)
+
+def aas_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
+    """
+    function that injects the dependencies for AssetAdministrationShellRepository
+    """
+
+    return AssetAdministrationShellRepository(engine)
 
 def permission_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
     """
@@ -87,6 +97,15 @@ def get_all_users_use_case(
 
     return FindAllUsersUseCase(repository)
 
+def get_all_aas_use_case(
+        repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]
+):
+    """
+    function that injects the dependencies for FindAllAssetAdministrationShellsUseCase
+    """
+
+    return FindAllAssetAdministrationShellsUseCase(repository)
+
 def sign_in_use_case(repository: Annotated[UserRepository, Depends(user_repository)]) -> SignInUseCase:
     """
     function that injects the dependencies for SignInUseCase
@@ -117,6 +136,13 @@ def create_role_use_case(repository: Annotated[RoleRepository, Depends(role_repo
     """
 
     return CreateRoleUseCase(repository)
+
+def create_aas_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
+    """
+    function that injects the dependencies for CreateAssetAdministrationShellUseCase
+    """
+
+    return CreateAssetAdministrationShellUseCase(repository)
 
 def create_permission_use_case(repository: Annotated[PermissionRepository, Depends(permission_repository)]):
     """

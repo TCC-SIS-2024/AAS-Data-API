@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import datetime
 
-from sqlalchemy import String, DateTime, Uuid, func, ForeignKey
+from sqlalchemy import String, DateTime, Uuid, func, ForeignKey, Integer, Boolean
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
 from sqlalchemy.orm import DeclarativeBase
@@ -55,3 +55,15 @@ class Permission(Base):
                                                 nullable=False)
 
     roles: Mapped[List[Role]] = relationship('Role', back_populates='permission')
+
+class AssetAdministrationShell(Base):
+    __tablename__ = 'asset_administration_shells'
+    id: Mapped[str] = MappedColumn(Uuid(), default=uuid.uuid4, unique=True, nullable=False, primary_key=True)
+    id_short: Mapped[str] = MappedColumn(String(255), unique=True, nullable=True)
+    database_endpoint: Mapped[str] = MappedColumn(String(255), nullable=True)
+    host: Mapped[str] = MappedColumn(String(255), nullable=True)
+    aas_modeling: Mapped[str] = MappedColumn(String(255), nullable=True)
+    active: Mapped[bool] = MappedColumn(Boolean(False), nullable=True)
+    port: Mapped[int] = MappedColumn(Integer(), nullable=True)
+    created_at: Mapped[datetime] = MappedColumn(DateTime(timezone=True), default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = MappedColumn(DateTime(timezone=True), default=func.now(), onupdate=func.now())

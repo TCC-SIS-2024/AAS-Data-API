@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import Optional, Any
 
+from src.domain.entities.asset_administration_shell import AssetAdministrationShellInput
 from src.domain.entities.permission import PermissionInput, PermissionOutput
 from src.domain.entities.role import RoleInput, RoleOutput
 from src.domain.entities.user import UserOutput, UserInput
@@ -106,5 +108,72 @@ class ISystemRepository(ABC):
         """
         This abstract method is responsible for getting the opened connections of the PostgreSQL database.
         :return: opened connections of the PostgreSQL database
+        """
+        raise NotImplemented()
+
+class IAssetAdministrationShellRepository(ABC):
+    """
+    Interface responsible for AssetAdministrationShellRepository main methods.
+    """
+
+    @abstractmethod
+    async def count_all_asset_administration_shells(self):
+        """
+        This abstract method is responsible for counting all asset administration shells on the database.
+        :return: number of asset administration shells
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def find_all(self, page: int = 1, page_size: int = 10, search_input: Optional[Any] = None):
+        """
+        This abstract method is responsible for finding all asset administration shells on the database.
+        :return:
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def find_by_id_short(self, id_short: str):
+        """
+        This abstract method is responsible for finding the asset administration shell on the database and return it information.
+        :param id_short:
+        :return: an asset administration shell information
+        """
+
+        raise NotImplemented()
+
+    @abstractmethod
+    async def find_by_host(self, host: str):
+        """
+        This abstract method represents a method that call from database a AAS by host
+        :param host:
+        :return:
+        """
+
+        raise NotImplemented()
+
+    @abstractmethod
+    async def create(self, aas: AssetAdministrationShellInput):
+        """
+        This abstract method is responsible for storing the asset administration shell on the database and return it information.
+        :param aas: AssetAdministrationShellInput:
+        :return: a asset administration shell information
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def update(self, aas: AssetAdministrationShellInput):
+        """
+        This abstract method is responsible for updating the asset administration shell on the database and return it information.
+        :param aas: AssetAdministrationShellInput:
+        :return: a asset administration shell information
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def delete(self, id_short: str):
+        """
+        This abstract method is responsible for deleting the asset administration shell on the database.
+        :param id_short:
         """
         raise NotImplemented()

@@ -1,6 +1,12 @@
-from fastapi import APIRouter, Query, Depends
+from typing import Annotated, Any
 
-from src.web.dependencies import get_token
+from fastapi import APIRouter, Query, Depends, Body
+from fastapi.responses import JSONResponse
+
+from src.application.usecases.create_asset_administration_shell import CreateAssetAdministrationShellUseCase
+from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
+from src.domain.entities.asset_administration_shell import AssetAdministrationShellInput
+from src.web.dependencies import get_token, create_aas_use_case, get_all_aas_use_case
 
 asset_administration_shells_router = APIRouter(
     prefix="/asset-administration-shells",
@@ -15,35 +21,35 @@ asset_administration_shells_router = APIRouter(
     summary="Route for fetching all asset administration shells stored in System."
 )
 async def get_asset_administration_shells(
-        search: str = Query(None)
+        use_case: Annotated[FindAllAssetAdministrationShellsUseCase, Depends(get_all_aas_use_case)],
+        search: Any = Query(None),
+        page: int = Query(default=1),
+        page_size: int = Query(default=10)
 ):
     """
     This Route is used to fetch all asset administration shells stored in System.
+    :param use_case: 
+    :param page_size:
+    :param page:
     :param search: --> This parameter is used to search for a specific asset administration shell
     by its IdShort or Hostname.
 
     :return: it returns a list of asset administration shells stored in System.
     """
 
-    return [
-        {
-            "id_short": "AAS1",
-            "host": "192.168.100.22",
-            "port": 4849,
-            "database_endpoint": "0.0.0.0",
-            "aas_modeling": "modeling.json",
-            "active": True
-        }
-    ]
+    response = await use_case.execute(page, page_size, search)
+    return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
 @asset_administration_shells_router.post(
     '/',
     summary="Route for storing asset administration shells stored in System."
 )
-async def get_asset_administration_shells(
-        search: str = Query(None)
+async def create_asset_administration_shells(
+        use_case: Annotated[CreateAssetAdministrationShellUseCase, Depends(create_aas_use_case)],
+        aas: Annotated[AssetAdministrationShellInput, Body(...)],
 ):
-    ...
+    response = await use_case.execute(aas)
+    return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
 @asset_administration_shells_router.patch(
     '/',
