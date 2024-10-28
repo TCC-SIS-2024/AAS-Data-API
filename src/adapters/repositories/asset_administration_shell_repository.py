@@ -90,6 +90,7 @@ class AssetAdministrationShellRepository(IAssetAdministrationShellRepository):
                 smtm = insert(AssetAdministrationShell).values(
                     id_short=aas.id_short,
                     database_endpoint=aas.database_endpoint,
+                    host=aas.host,
                     aas_modeling=aas.aas_modeling,
                     active=aas.active,
                     port=aas.port,
