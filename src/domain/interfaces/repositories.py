@@ -117,6 +117,15 @@ class IAssetAdministrationShellRepository(ABC):
     """
 
     @abstractmethod
+    async def find_by_id(self, aas_id: str):
+        """
+        This abstract method is responsible for finding the asset administration shell on the database and return it information.
+        :param aas_id:
+        :return: an asset administration shell information
+        """
+        raise NotImplemented()
+
+    @abstractmethod
     async def delete_by_id(self, aas_id: str):
         """
         This abstract method is responsible for deleting the asset administration shell on the database.

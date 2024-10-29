@@ -1,9 +1,8 @@
 from typing import List, Optional, Any
-from uuid import UUID
 from src.domain.entities.asset_administration_shell import AssetAdministrationShellInput, AssetAdministrationShellOutput
 from src.domain.interfaces.repositories import IAssetAdministrationShellRepository
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
-from sqlalchemy import insert, select, String, or_, Integer, delete
+from sqlalchemy import insert, select, or_, delete
 from src.infra.databases.pgdatabase import AssetAdministrationShell
 
 
@@ -11,6 +10,16 @@ class AssetAdministrationShellRepository(IAssetAdministrationShellRepository):
 
     def __init__(self, pg_engine: AsyncEngine):
         self.pg_engine: AsyncEngine = pg_engine
+
+    async def find_by_id(self, aas_id: str):
+        session = async_sessionmaker(self.pg_engine)
+        async with session() as session:
+            smtm = select(AssetAdministrationShell).where(AssetAdministrationShell.id == aas_id)
+            result = await session.execute(smtm)
+            aas = result.scalar_one_or_none()
+            if aas is not None:
+                return AssetAdministrationShellOutput(**aas.__dict__)
+            return None
 
     async def delete_by_id(self, aas_id: str):
         try:

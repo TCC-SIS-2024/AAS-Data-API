@@ -16,6 +16,7 @@ from src.application.usecases.create_role import CreateRoleUseCase
 from src.application.usecases.delete_asset_administration_shell import DeleteAssetAdministrationShellUseCase
 from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
 from src.application.usecases.find_all_users import FindAllUsersUseCase
+from src.application.usecases.find_asset_administration_shell_by_id import FindAssetAdministrationShellByIdUseCase
 from src.application.usecases.sign_in import SignInUseCase
 from src.application.usecases.sign_up import SignUpUseCase
 from src.application.usecases.system_status import SystemStatusUseCase
@@ -151,6 +152,13 @@ def delete_aas_use_case(repository: Annotated[AssetAdministrationShellRepository
     """
 
     return DeleteAssetAdministrationShellUseCase(repository)
+
+def find_aas_by_id_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
+    """
+    function that injects the dependencies for FindAssetAdministrationShellByIdUseCase
+    """
+
+    return FindAssetAdministrationShellByIdUseCase(repository)
 
 def create_permission_use_case(repository: Annotated[PermissionRepository, Depends(permission_repository)]):
     """
