@@ -1,10 +1,9 @@
-from datetime import datetime
 from typing import List, Optional, Any
-
+from uuid import UUID
 from src.domain.entities.asset_administration_shell import AssetAdministrationShellInput, AssetAdministrationShellOutput
 from src.domain.interfaces.repositories import IAssetAdministrationShellRepository
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
-from sqlalchemy import insert, select, String, or_, Integer
+from sqlalchemy import insert, select, String, or_, Integer, delete
 from src.infra.databases.pgdatabase import AssetAdministrationShell
 
 
@@ -13,12 +12,24 @@ class AssetAdministrationShellRepository(IAssetAdministrationShellRepository):
     def __init__(self, pg_engine: AsyncEngine):
         self.pg_engine: AsyncEngine = pg_engine
 
-    async def count_all_asset_administration_shells(self):
-        """
-        Implementation of abstract method `count_all_asset_administration_shells` which will count all aas
-        :return: number of asset administration shells fetched in database
-        """
+    async def delete_by_id(self, aas_id: str):
+        try:
+            session = async_sessionmaker(self.pg_engine)
+            async with session() as session:
+                smtm = delete(AssetAdministrationShell).where(AssetAdministrationShell.id == aas_id).returning(
+                    AssetAdministrationShell.id
+                )
+                result = await session.execute(smtm)
+                aas_id_deleted = result.scalar_one_or_none()
+                await session.commit()
+                return aas_id_deleted
+        except:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
 
+    async def count_all_asset_administration_shells(self):
         session = async_sessionmaker(self.pg_engine)
 
         async with session() as session:

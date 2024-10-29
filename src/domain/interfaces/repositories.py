@@ -117,6 +117,13 @@ class IAssetAdministrationShellRepository(ABC):
     """
 
     @abstractmethod
+    async def delete_by_id(self, aas_id: str):
+        """
+        This abstract method is responsible for deleting the asset administration shell on the database.
+        """
+        raise NotImplemented()
+
+    @abstractmethod
     async def count_all_asset_administration_shells(self):
         """
         This abstract method is responsible for counting all asset administration shells on the database.

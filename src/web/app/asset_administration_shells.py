@@ -1,12 +1,13 @@
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Query, Depends, Body
+from fastapi import APIRouter, Query, Depends, Body, Path
 from fastapi.responses import JSONResponse
 
 from src.application.usecases.create_asset_administration_shell import CreateAssetAdministrationShellUseCase
+from src.application.usecases.delete_asset_administration_shell import DeleteAssetAdministrationShellUseCase
 from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
 from src.domain.entities.asset_administration_shell import AssetAdministrationShellInput
-from src.web.dependencies import get_token, create_aas_use_case, get_all_aas_use_case
+from src.web.dependencies import get_token, create_aas_use_case, get_all_aas_use_case, delete_aas_use_case
 
 asset_administration_shells_router = APIRouter(
     prefix="/asset-administration-shells",
@@ -70,10 +71,12 @@ async def get_asset_administration_shells(
     ...
 
 @asset_administration_shells_router.delete(
-    '/',
+    '/{aas_id}',
     summary="Route for deleting asset administration shells stored in System."
 )
 async def get_asset_administration_shells(
-        search: str = Query(None)
+        aas_id: Annotated[str, Path(...)],
+        use_case: Annotated[DeleteAssetAdministrationShellUseCase, Depends(delete_aas_use_case)],
 ):
-    ...
+    response = await use_case.execute(aas_id)
+    return JSONResponse(content=response.model_dump(), status_code=response.status_code)

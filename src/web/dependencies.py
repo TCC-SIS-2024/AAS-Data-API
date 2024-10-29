@@ -13,6 +13,7 @@ from src.adapters.repositories.user_repository import UserRepository
 from src.application.usecases.create_asset_administration_shell import CreateAssetAdministrationShellUseCase
 from src.application.usecases.create_permission import CreatePermissionUseCase
 from src.application.usecases.create_role import CreateRoleUseCase
+from src.application.usecases.delete_asset_administration_shell import DeleteAssetAdministrationShellUseCase
 from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
 from src.application.usecases.find_all_users import FindAllUsersUseCase
 from src.application.usecases.sign_in import SignInUseCase
@@ -143,6 +144,13 @@ def create_aas_use_case(repository: Annotated[AssetAdministrationShellRepository
     """
 
     return CreateAssetAdministrationShellUseCase(repository)
+
+def delete_aas_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
+    """
+    function that injects the dependencies for DeleteAssetAdministrationShellUseCase
+    """
+
+    return DeleteAssetAdministrationShellUseCase(repository)
 
 def create_permission_use_case(repository: Annotated[PermissionRepository, Depends(permission_repository)]):
     """
