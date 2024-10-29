@@ -126,6 +126,16 @@ class IAssetAdministrationShellRepository(ABC):
         raise NotImplemented()
 
     @abstractmethod
+    async def update_by_id(self, aas: AssetAdministrationShellInput, aas_id: str):
+        """
+        This abstract method is responsible for updating the asset administration shell on the database and return it information.
+        :param aas:
+        :param aas_id:
+        :return: an asset administration shell information
+        """
+        raise NotImplemented()
+
+    @abstractmethod
     async def delete_by_id(self, aas_id: str):
         """
         This abstract method is responsible for deleting the asset administration shell on the database.
@@ -174,22 +184,5 @@ class IAssetAdministrationShellRepository(ABC):
         This abstract method is responsible for storing the asset administration shell on the database and return it information.
         :param aas: AssetAdministrationShellInput:
         :return: a asset administration shell information
-        """
-        raise NotImplemented()
-
-    @abstractmethod
-    async def update(self, aas: AssetAdministrationShellInput):
-        """
-        This abstract method is responsible for updating the asset administration shell on the database and return it information.
-        :param aas: AssetAdministrationShellInput:
-        :return: a asset administration shell information
-        """
-        raise NotImplemented()
-
-    @abstractmethod
-    async def delete(self, id_short: str):
-        """
-        This abstract method is responsible for deleting the asset administration shell on the database.
-        :param id_short:
         """
         raise NotImplemented()

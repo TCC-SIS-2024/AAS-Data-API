@@ -2,7 +2,7 @@ from typing import List, Optional, Any
 from src.domain.entities.asset_administration_shell import AssetAdministrationShellInput, AssetAdministrationShellOutput
 from src.domain.interfaces.repositories import IAssetAdministrationShellRepository
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
-from sqlalchemy import insert, select, or_, delete
+from sqlalchemy import insert, select, or_, delete, update
 from src.infra.databases.pgdatabase import AssetAdministrationShell
 
 
@@ -10,6 +10,32 @@ class AssetAdministrationShellRepository(IAssetAdministrationShellRepository):
 
     def __init__(self, pg_engine: AsyncEngine):
         self.pg_engine: AsyncEngine = pg_engine
+
+    async def update_by_id(self, aas: AssetAdministrationShellInput, aas_id: str):
+        try:
+            session = async_sessionmaker(self.pg_engine, autoflush=False)
+            async with session() as session:
+                smtm = update(AssetAdministrationShell).values(
+                    id_short=aas.id_short,
+                    database_endpoint=aas.database_endpoint,
+                    host=aas.host,
+                    aas_modeling=aas.aas_modeling,
+                    active=aas.active,
+                    port=aas.port,
+                ).where(AssetAdministrationShell.id == aas_id).returning(AssetAdministrationShell)
+
+                result = await session.execute(smtm)
+                aas = result.scalar_one_or_none()
+                updated_aas = AssetAdministrationShellOutput(**aas.__dict__)
+                await session.commit()
+
+                if aas is not None:
+                    return updated_aas
+        except:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
 
     async def find_by_id(self, aas_id: str):
         session = async_sessionmaker(self.pg_engine)
@@ -128,9 +154,3 @@ class AssetAdministrationShellRepository(IAssetAdministrationShellRepository):
             raise
         finally:
             await session.close()
-
-    async def update(self, aas: AssetAdministrationShellInput):
-        pass
-
-    async def delete(self, id_short: str):
-        pass

@@ -20,6 +20,8 @@ from src.application.usecases.find_asset_administration_shell_by_id import FindA
 from src.application.usecases.sign_in import SignInUseCase
 from src.application.usecases.sign_up import SignUpUseCase
 from src.application.usecases.system_status import SystemStatusUseCase
+from src.application.usecases.update_asset_administration_shell_by_id import \
+    UpdateAssetAdministrationShellByIdUseCase
 from src.application.usecases.users_me import UsersMeUseCase
 from src.infra.databases.pgdatabase import engine as postgres_engine
 
@@ -159,6 +161,13 @@ def find_aas_by_id_use_case(repository: Annotated[AssetAdministrationShellReposi
     """
 
     return FindAssetAdministrationShellByIdUseCase(repository)
+
+def update_aas_by_id_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
+    """
+    function that injects the dependencies for UpdateAssetAdministrationShellByIdUseCase
+    """
+
+    return UpdateAssetAdministrationShellByIdUseCase(repository)
 
 def create_permission_use_case(repository: Annotated[PermissionRepository, Depends(permission_repository)]):
     """
