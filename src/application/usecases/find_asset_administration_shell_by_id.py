@@ -23,6 +23,9 @@ class FindAssetAdministrationShellByIdUseCase(UseCase):
         """
         try:
 
+            if aas_id is None:
+                return HttpHelper.bad_request(Exception('Asset Administration Shell ID is required.'))
+
             aas = await self.repository.find_by_id(aas_id)
 
             if aas is None:
