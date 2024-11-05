@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from src.adapters.libs.bcrypt import BcryptAdapter
 from src.adapters.repositories.asset_administration_shell_repository import AssetAdministrationShellRepository
+from src.adapters.repositories.history_repository import AASHistoryRepository
 from src.adapters.repositories.permission_repository import PermissionRepository
 from src.adapters.repositories.role_repository import RoleRepository
 from src.adapters.repositories.system_repository import SystemRepository
@@ -17,6 +18,8 @@ from src.application.usecases.delete_asset_administration_shell import DeleteAss
 from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
 from src.application.usecases.find_all_users import FindAllUsersUseCase
 from src.application.usecases.find_asset_administration_shell_by_id import FindAssetAdministrationShellByIdUseCase
+from src.application.usecases.get_asset_administration_shell_history_data import \
+    GetAssetAdministrationShellHistoryDataUseCase
 from src.application.usecases.sign_in import SignInUseCase
 from src.application.usecases.sign_up import SignUpUseCase
 from src.application.usecases.system_status import SystemStatusUseCase
@@ -57,6 +60,13 @@ def aas_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
     """
 
     return AssetAdministrationShellRepository(engine)
+
+def history_aas_data_repository():
+    """
+    function that injects the dependencies for AASHistoryRepository
+    """
+
+    return AASHistoryRepository()
 
 def permission_repository(engine: Annotated[AsyncEngine, Depends(pg_engine)]):
     """
@@ -175,3 +185,11 @@ def create_permission_use_case(repository: Annotated[PermissionRepository, Depen
     """
 
     return CreatePermissionUseCase(repository)
+
+
+def get_aas_history_data_use_case(repository: Annotated[AASHistoryRepository, Depends(history_aas_data_repository)]):
+    """
+    function that injects the dependencies for GetAssetAdministrationShellHistoryData
+    """
+
+    return GetAssetAdministrationShellHistoryDataUseCase(repository)

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Optional, Any
 
 from src.domain.entities.asset_administration_shell import AssetAdministrationShellInput
@@ -108,6 +109,19 @@ class ISystemRepository(ABC):
         """
         This abstract method is responsible for getting the opened connections of the PostgreSQL database.
         :return: opened connections of the PostgreSQL database
+        """
+        raise NotImplemented()
+
+class IAASHistoryData(ABC):
+    """
+    Interface responsible for AASHistoryData main methods.
+    """
+
+    @abstractmethod
+    async def get_history_data_from_aas(self, start_time: datetime, end_time: datetime):
+        """
+        This abstract method is responsible for getting the history data from the Asset Administration Shell.
+        :return: history data from the Asset Administration Shell
         """
         raise NotImplemented()
 

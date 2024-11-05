@@ -16,6 +16,8 @@ sqlalchemy = {extras = ["asyncio"], version = "^2.0.35"}
 asyncpg = "^0.29.0"
 pytest-watch = "^4.2.0"
 python-socketio = {extras = ["asyncio"], version = "^5.11.4"}
+motor = {extras = ["all"], version = "^3.6.0"}
+asyncua = "^1.1.5"
 
 [tool.poetry.group.dev.dependencies]
 httpx = "^0.27.2"
