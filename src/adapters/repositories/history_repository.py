@@ -11,13 +11,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 class AASHistoryRepository(IAASHistoryData):
 
-    def __init__(self):
-        host = os.environ.get('OPCUA_SERVER_ENDPOINT')
-        port = os.environ.get('OPCUA_SERVER_PORT')
-        self.client = Client(f"opc.tcp://{host}:{port}")
+    async def get_history_data_from_aas(self, start_time: datetime, end_time: datetime, opcua_server_host: str, opcua_server_port: int):
 
-    async def get_history_data_from_aas(self, start_time: datetime, end_time: datetime):
-        async with self.client as opcua_client:
+        async with Client(f"opc.tcp://{opcua_server_host}:{opcua_server_port}") as opcua_client:
             endpoint_info_as_json = await opcua_client.nodes.server.call_method("0:GetEndpointHistoryData")
             endpoint_info_dict = json.loads(endpoint_info_as_json)
 

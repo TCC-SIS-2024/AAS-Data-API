@@ -17,9 +17,9 @@ class GetAssetAdministrationShellHistoryDataUseCase(UseCase):
         """
         self.repository: IAASHistoryData = repository
 
-    async def execute(self, start_time: datetime, end_time: datetime):
+    async def execute(self, start_time: datetime, end_time: datetime, opcua_server_host: str, opcua_server_port: int):
         try:
-            data, count = await self.repository.get_history_data_from_aas(start_time, end_time)
+            data, count = await self.repository.get_history_data_from_aas(start_time, end_time, opcua_server_host, opcua_server_port)
             return HttpHelper.ok({
                 "data": data,
                 "qtd": count

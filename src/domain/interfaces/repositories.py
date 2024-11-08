@@ -118,7 +118,7 @@ class IAASHistoryData(ABC):
     """
 
     @abstractmethod
-    async def get_history_data_from_aas(self, start_time: datetime, end_time: datetime):
+    async def get_history_data_from_aas(self, start_time: datetime, end_time: datetime, opcua_server_host: str, opcua_server_port: int):
         """
         This abstract method is responsible for getting the history data from the Asset Administration Shell.
         :return: history data from the Asset Administration Shell

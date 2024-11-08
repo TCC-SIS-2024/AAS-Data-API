@@ -14,6 +14,8 @@ from src.web.app.users import users_router
 from src.web.auth.auth import auth_router
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.web.middlewares import CheckTokenMiddleware
+
 websocket_server = AsyncServer(async_mode='asgi', cors_allowed_origins=["http://localhost:5173"], logger=True)
 app = FastAPI(
     title="AAS Data API",
@@ -27,6 +29,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(CheckTokenMiddleware)
 
 api_version = '/api/v1'
 app.include_router(auth_router, prefix=api_version)

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
@@ -19,13 +19,15 @@ history_router = APIRouter(
 @history_router.get('/')
 async def get_historized_data(
     use_case: Annotated[GetAssetAdministrationShellHistoryDataUseCase, Depends(get_aas_history_data_use_case)],
+    opcua_server_host: Annotated[str, Query(...)],
+    opcua_server_port: Annotated[int, Query(...)],
     start_date: Annotated[datetime, Query(...)],
-    end_date: Annotated[datetime, Query(...)]
+    end_date: datetime = Query(default=datetime.now(timezone.utc))
 ):
     """
     Route responsible for getting historized data from aas.
     :return:
     """
 
-    response = await use_case.execute(start_date, end_date)
+    response = await use_case.execute(start_date, end_date, opcua_server_host, opcua_server_port)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
