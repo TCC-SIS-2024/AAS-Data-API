@@ -5,7 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
 
 from src.domain.entities.user import UserOutput, UserInput
 from src.domain.interfaces.repositories import IUserRepository
-from src.infra.databases.pgdatabase import User
+from src.infra.databases.pgdatabase import User, Role
+from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import joinedload
 
 
 class UserRepository(IUserRepository):
@@ -69,13 +71,15 @@ class UserRepository(IUserRepository):
         session = async_sessionmaker(self.pg_engine)
 
         async with session() as session:
-            smtm = select(User).where(User.email == email)
+            smtm = select(User).options(joinedload(User.role)).where(User.email == email)
             result = await session.execute(smtm)
 
-            user = result.scalar_one_or_none()
+            user = result.unique().scalar_one_or_none()
+
+            encoded = jsonable_encoder(user)
 
             if user is not None:
-                return UserOutput(**user.__dict__)
+                return UserOutput(**encoded)
 
         return None
 
@@ -92,15 +96,25 @@ class UserRepository(IUserRepository):
                     username=user_base.username,
                     email=user_base.email,
                     password=user_base.password,
-                ).returning(User)
+                    role_id=user_base.role_id
+                ).returning(User.id)
 
                 result = await session.execute(smtm)
-                user = result.scalar_one_or_none()
-                inserted_user = UserOutput(**user.__dict__)
+                inserted_id = result.scalar_one_or_none()
                 await session.commit()
 
-                if user is not None:
-                    return inserted_user
+                if inserted_id is not None:
+                    query = select(User).options(
+                        joinedload(User.role)
+                    ).where(User.id == inserted_id)
+
+                    result = await session.execute(query)
+
+                    user = result.unique().scalar_one_or_none()
+
+                    encoded = jsonable_encoder(user)
+
+                    return UserOutput(**encoded)
 
                 return None
         except:

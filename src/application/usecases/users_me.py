@@ -30,6 +30,7 @@ class UsersMeUseCase(UseCase):
             user_email: str = payload.get('sub')
             user_information: UserOutput = await self.repository.find_by_email(user_email)
             user_information: dict = json.loads(user_information.model_dump_json())
+            del user_information['password']
             return HttpHelper.ok(user_information)
         except InvalidTokenError as e:
             print_exc()

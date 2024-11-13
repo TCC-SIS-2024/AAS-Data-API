@@ -1,10 +1,13 @@
 import uuid
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.fields import Field
 from pydantic.networks import EmailStr
+
+from src.domain.entities.role import RoleOutput
 
 
 class UserInput(BaseModel):
@@ -14,6 +17,7 @@ class UserInput(BaseModel):
     username: str = Field(max_length=100, min_length=5)
     email: EmailStr
     password: str = Field(max_length=100, min_length=6)
+    role_id: Optional[UUID] = None
 
 class UserOutput(UserInput):
     """
@@ -22,6 +26,7 @@ class UserOutput(UserInput):
     id: UUID
     created_at: datetime
     updated_at: datetime
+    role: Optional[RoleOutput] = None
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
