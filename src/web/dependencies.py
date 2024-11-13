@@ -16,6 +16,7 @@ from src.application.usecases.create_permission import CreatePermissionUseCase
 from src.application.usecases.create_role import CreateRoleUseCase
 from src.application.usecases.delete_asset_administration_shell import DeleteAssetAdministrationShellUseCase
 from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
+from src.application.usecases.find_all_roles import FindAllRolesUseCase
 from src.application.usecases.find_all_users import FindAllUsersUseCase
 from src.application.usecases.find_asset_administration_shell_by_id import FindAssetAdministrationShellByIdUseCase
 from src.application.usecases.get_asset_administration_shell_history_data import \
@@ -120,6 +121,15 @@ def get_all_aas_use_case(
     """
 
     return PermissionDecorator(FindAllAssetAdministrationShellsUseCase(repository), 'read')
+
+def get_all_roles_use_case(
+        repository: Annotated[RoleRepository, Depends(role_repository)]
+):
+    """
+    function that injects the dependencies for FindAllRolesUseCase
+    """
+
+    return PermissionDecorator(FindAllRolesUseCase(repository), 'read')
 
 def sign_in_use_case(repository: Annotated[UserRepository, Depends(user_repository)]) -> SignInUseCase:
     """

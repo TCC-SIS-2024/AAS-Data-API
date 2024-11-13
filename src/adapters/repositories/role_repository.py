@@ -1,3 +1,5 @@
+from typing import Optional, Any, List
+
 from src.domain.entities.permission import PermissionOutput
 from src.domain.entities.role import RoleInput, RoleOutput
 from src.domain.interfaces.repositories import IRoleRepository
@@ -6,6 +8,7 @@ from sqlalchemy import insert, select
 from sqlalchemy.orm import joinedload
 from src.infra.databases.pgdatabase import Role, Permission
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import insert, select, or_
 
 class RoleRepository(IRoleRepository):
 
@@ -51,3 +54,39 @@ class RoleRepository(IRoleRepository):
             raise
         finally:
             await session.close()
+
+    async def find_all(self, page: int = 1, page_size: int = 10, search_input: Optional[Any] = None):
+        """
+        Implementation of abstract method `find_all` which will find all roles
+        :return:  fetched in database
+        """
+
+        session = async_sessionmaker(self.pg_engine)
+
+        async with session() as session:
+            offset = (page - 1) * page_size
+
+            smtm = select(Role).options(
+                joinedload(Role.permission)
+            ).limit(page_size).offset(offset)
+
+            search_conditions = []
+
+            if search_input is not None:
+                if isinstance(search_input, str):
+                    search_conditions.append(Role.name.ilike(f"%{search_input}%"))
+
+            if search_conditions:
+                smtm = smtm.where(or_(*search_conditions))
+
+            result = await session.execute(smtm)
+            fetched_users = result.unique().scalars()
+            users: List[RoleOutput] = []
+
+            for user in fetched_users.fetchall():
+                encoded = jsonable_encoder(user)
+                users.append(RoleOutput(**encoded))
+
+            return users
+
+        return None

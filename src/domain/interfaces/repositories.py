@@ -68,6 +68,14 @@ class IRoleRepository(ABC):
         """
         raise NotImplemented()
 
+    @abstractmethod
+    async def find_all(self, page: int = 1, page_size: int = 10, search_input: Optional[Any] = None):
+        """
+        This abstract method is responsible for finding all roles on the database.
+        :return:
+        """
+        raise NotImplemented()
+
 class IPermissionRepository(ABC):
     """
     Interface responsible for RoleRepository main methods.
