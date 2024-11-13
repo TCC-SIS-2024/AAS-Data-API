@@ -44,14 +44,17 @@ class UserRepository(IUserRepository):
 
             offset = (page - 1) * page_size
 
-            smtm = select(User).limit(page_size).offset(offset)
+            smtm = select(User).options(
+                joinedload(User.role).options(joinedload(Role.permission))
+            ).limit(page_size).offset(offset)
 
             result = await session.execute(smtm)
-            fetched_users = result.scalars()
+            fetched_users = result.unique().scalars()
             users: List[UserOutput] = []
 
             for user in fetched_users.fetchall():
-                users.append(UserOutput(**user.__dict__))
+                encoded = jsonable_encoder(user)
+                users.append(UserOutput(**encoded))
 
             return users
 
@@ -71,7 +74,7 @@ class UserRepository(IUserRepository):
         session = async_sessionmaker(self.pg_engine)
 
         async with session() as session:
-            smtm = select(User).options(joinedload(User.role)).where(User.email == email)
+            smtm = select(User).options(joinedload(User.role).options(joinedload(Role.permission))).where(User.email == email)
             result = await session.execute(smtm)
 
             user = result.unique().scalar_one_or_none()

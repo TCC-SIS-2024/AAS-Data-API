@@ -15,7 +15,6 @@ class PermissionInput(BaseModel):
     def validate_format(cls, value: str) -> str:
         matched = re.match("^([a-zA-Z]+)(:[a-zA-Z]+)*$", value)
         if matched:
-            print(value)
             return value
         else:
             raise ValueError("Invalid permission format. It should be like 'create:read:update:delete'")

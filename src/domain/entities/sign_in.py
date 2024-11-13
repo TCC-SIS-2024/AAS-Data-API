@@ -43,7 +43,13 @@ class SignIn:
 
     def generate_access_token(self, user: UserOutput):
         access_token_expires = timedelta(minutes=float(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES')))
-        access_token = self.encoder.create_access_token({'sub': user.email}, expires_delta=access_token_expires)
+        access_token = self.encoder.create_access_token({
+            'sub': user.email,
+            'role': user.role.name,
+            'role_id': str(user.role.id),
+            'permissions': user.role.permission.value,
+            'permission_id': str(user.role.permission_id)
+        }, expires_delta=access_token_expires)
         return Token(access_token=access_token, token_type='bearer').model_dump()
 
 

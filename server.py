@@ -14,7 +14,7 @@ from src.web.app.users import users_router
 from src.web.auth.auth import auth_router
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.web.middlewares import CheckTokenMiddleware
+from src.web.middlewares import CheckTokenMiddleware, CheckRoleMiddleware
 
 websocket_server = AsyncServer(async_mode='asgi', cors_allowed_origins=["http://localhost:5173"], logger=True)
 app = FastAPI(
@@ -31,6 +31,7 @@ app.add_middleware(
 )
 
 app.add_middleware(CheckTokenMiddleware)
+app.add_middleware(CheckRoleMiddleware)
 
 api_version = '/api/v1'
 app.include_router(auth_router, prefix=api_version)

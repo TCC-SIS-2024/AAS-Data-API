@@ -1,6 +1,6 @@
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Query, Depends, Body, Path
+from fastapi import APIRouter, Query, Depends, Body, Path, Request
 from fastapi.responses import JSONResponse
 
 from src.application.usecases.create_asset_administration_shell import CreateAssetAdministrationShellUseCase
@@ -25,6 +25,7 @@ asset_administration_shells_router = APIRouter(
     summary="Route for fetching all asset administration shells stored in System."
 )
 async def get_asset_administration_shells(
+        request: Request,
         use_case: Annotated[FindAllAssetAdministrationShellsUseCase, Depends(get_all_aas_use_case)],
         search: Any = Query(None),
         page: int = Query(default=1),
@@ -41,7 +42,7 @@ async def get_asset_administration_shells(
     :return: it returns a list of asset administration shells stored in System.
     """
 
-    response = await use_case.execute(page, page_size, search)
+    response = await use_case.execute(page=page, page_size=page_size, search_input=search, request=request)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
 @asset_administration_shells_router.post(
@@ -49,10 +50,11 @@ async def get_asset_administration_shells(
     summary="Route for storing asset administration shells stored in System."
 )
 async def create_asset_administration_shells(
+        request: Request,
         use_case: Annotated[CreateAssetAdministrationShellUseCase, Depends(create_aas_use_case)],
         aas: Annotated[AssetAdministrationShellInput, Body(...)],
 ):
-    response = await use_case.execute(aas)
+    response = await use_case.execute(aas_input=aas, request=request)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
 @asset_administration_shells_router.patch(
@@ -68,23 +70,25 @@ async def get_asset_administration_shells(
     '/{aas_id}',
     summary="Route for updating asset administration shells stored in System."
 )
-async def get_asset_administration_shells(
+async def update_asset_administration_shells(
+        request: Request,
         aas_id: Annotated[str, Path(...)],
         aas: Annotated[AssetAdministrationShellInput, Body(...)],
         use_case: Annotated[UpdateAssetAdministrationShellByIdUseCase, Depends(update_aas_by_id_use_case)]
 ):
-    response = await use_case.execute(aas, aas_id)
+    response = await use_case.execute(aas_input=aas, aas_id=aas_id, request=request)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
 @asset_administration_shells_router.delete(
     '/{aas_id}',
     summary="Route for deleting asset administration shells stored in System."
 )
-async def get_asset_administration_shells(
+async def delete_asset_administration_shells(
+        request: Request,
         aas_id: Annotated[str, Path(...)],
         use_case: Annotated[DeleteAssetAdministrationShellUseCase, Depends(delete_aas_use_case)],
 ):
-    response = await use_case.execute(aas_id)
+    response = await use_case.execute(aas_id=aas_id, request=request)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
 @asset_administration_shells_router.get(
@@ -92,8 +96,9 @@ async def get_asset_administration_shells(
     summary="Route for finding asset administration shells stored in System."
 )
 async def get_asset_administration_shell_by_id(
+        request: Request,
         aas_id: Annotated[str, Path(...)],
         use_case: Annotated[FindAssetAdministrationShellByIdUseCase, Depends(find_aas_by_id_use_case)]
 ):
-    response = await use_case.execute(aas_id)
+    response = await use_case.execute(aas_id=aas_id, request=request)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)

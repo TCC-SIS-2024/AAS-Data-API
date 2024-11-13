@@ -24,6 +24,16 @@ class HttpHelper:
         return HttpResponse(status_code=401, payload=str(error))
 
     @staticmethod
+    def forbidden(error: Exception) -> HttpResponse:
+        """
+        This method treats a bad request response from server
+        :param error: --> Exception caught or raised in the system.
+        :return: HttpResponse object with status_code and payload with the reason of error.
+        """
+
+        return HttpResponse(status_code=403, payload=str(error))
+
+    @staticmethod
     def bad_request(error: Exception) -> HttpResponse:
         """
         This method treats a bad request response from server

@@ -27,6 +27,7 @@ from src.application.usecases.update_asset_administration_shell_by_id import \
     UpdateAssetAdministrationShellByIdUseCase
 from src.application.usecases.users_me import UsersMeUseCase
 from src.infra.databases.pgdatabase import engine as postgres_engine
+from src.web.decorators import PermissionDecorator
 
 
 def pg_engine() -> AsyncEngine:
@@ -109,7 +110,7 @@ def get_all_users_use_case(
     function that injects the dependencies for findAllUsersUseCase
     """
 
-    return FindAllUsersUseCase(repository)
+    return PermissionDecorator(FindAllUsersUseCase(repository), 'read')
 
 def get_all_aas_use_case(
         repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]
@@ -118,7 +119,7 @@ def get_all_aas_use_case(
     function that injects the dependencies for FindAllAssetAdministrationShellsUseCase
     """
 
-    return FindAllAssetAdministrationShellsUseCase(repository)
+    return PermissionDecorator(FindAllAssetAdministrationShellsUseCase(repository), 'read')
 
 def sign_in_use_case(repository: Annotated[UserRepository, Depends(user_repository)]) -> SignInUseCase:
     """
@@ -149,42 +150,42 @@ def create_role_use_case(repository: Annotated[RoleRepository, Depends(role_repo
     function that injects the dependencies for CreateRoleUseCase
     """
 
-    return CreateRoleUseCase(repository)
+    return PermissionDecorator(CreateRoleUseCase(repository), 'read')
 
 def create_aas_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
     """
     function that injects the dependencies for CreateAssetAdministrationShellUseCase
     """
 
-    return CreateAssetAdministrationShellUseCase(repository)
+    return PermissionDecorator(CreateAssetAdministrationShellUseCase(repository), 'create')
 
 def delete_aas_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
     """
     function that injects the dependencies for DeleteAssetAdministrationShellUseCase
     """
 
-    return DeleteAssetAdministrationShellUseCase(repository)
+    return PermissionDecorator(DeleteAssetAdministrationShellUseCase(repository), 'delete')
 
 def find_aas_by_id_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
     """
     function that injects the dependencies for FindAssetAdministrationShellByIdUseCase
     """
 
-    return FindAssetAdministrationShellByIdUseCase(repository)
+    return PermissionDecorator(FindAssetAdministrationShellByIdUseCase(repository), 'read')
 
 def update_aas_by_id_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
     """
     function that injects the dependencies for UpdateAssetAdministrationShellByIdUseCase
     """
 
-    return UpdateAssetAdministrationShellByIdUseCase(repository)
+    return PermissionDecorator(UpdateAssetAdministrationShellByIdUseCase(repository), 'update')
 
 def create_permission_use_case(repository: Annotated[PermissionRepository, Depends(permission_repository)]):
     """
     function that injects the dependencies for CreatPermissionUseCase
     """
 
-    return CreatePermissionUseCase(repository)
+    return PermissionDecorator(CreatePermissionUseCase(repository), 'create')
 
 
 def get_aas_history_data_use_case(repository: Annotated[AASHistoryRepository, Depends(history_aas_data_repository)]):
@@ -192,4 +193,4 @@ def get_aas_history_data_use_case(repository: Annotated[AASHistoryRepository, De
     function that injects the dependencies for GetAssetAdministrationShellHistoryData
     """
 
-    return GetAssetAdministrationShellHistoryDataUseCase(repository)
+    return PermissionDecorator(GetAssetAdministrationShellHistoryDataUseCase(repository), 'read')

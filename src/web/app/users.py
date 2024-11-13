@@ -30,16 +30,19 @@ async def get_user_info(
 
 @users_router.get('/', summary='Route for getting user information.')
 async def get_users(
+        request: Request,
         use_case: Annotated[FindAllUsersUseCase, Depends(get_all_users_use_case)],
         page: int = Query(default=1),
         page_size: int = Query(default=10),
 ):
     """
     This method is used to get user information by a decorated Fast API route.
+    :param request:
     :param page_size:
     :param page:
     :param use_case:
     :return:
     """
-    response = await use_case.execute(page, page_size)
+
+    response = await use_case.execute(page, page_size, request)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
