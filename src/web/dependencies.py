@@ -15,6 +15,7 @@ from src.application.usecases.create_asset_administration_shell import CreateAss
 from src.application.usecases.create_permission import CreatePermissionUseCase
 from src.application.usecases.create_role import CreateRoleUseCase
 from src.application.usecases.delete_asset_administration_shell import DeleteAssetAdministrationShellUseCase
+from src.application.usecases.delete_role import DeleteRoleUseCase
 from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
 from src.application.usecases.find_all_roles import FindAllRolesUseCase
 from src.application.usecases.find_all_users import FindAllUsersUseCase
@@ -204,6 +205,13 @@ def find_role_by_id_use_case(repository: Annotated[RoleRepository, Depends(role_
     """
 
     return PermissionDecorator(FindRoleByIdUseCase(repository), 'read')
+
+def delete_role_by_id_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
+    """
+    function that injects the dependencies for DeleteRoleUseCase
+    """
+
+    return PermissionDecorator(DeleteRoleUseCase(repository), 'read')
 
 
 def get_aas_history_data_use_case(repository: Annotated[AASHistoryRepository, Depends(history_aas_data_repository)]):

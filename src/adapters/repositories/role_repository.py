@@ -8,7 +8,7 @@ from sqlalchemy import insert, select
 from sqlalchemy.orm import joinedload
 from src.infra.databases.pgdatabase import Role, Permission
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import insert, select, or_
+from sqlalchemy import insert, select, or_, delete
 
 class RoleRepository(IRoleRepository):
 
@@ -101,3 +101,20 @@ class RoleRepository(IRoleRepository):
             if role is not None:
                 return RoleOutput(**encoded)
             return None
+
+    async def delete_by_id(self, role_id: str):
+        try:
+            session = async_sessionmaker(self.pg_engine)
+            async with session() as session:
+                smtm = delete(Role).where(Role.id == role_id).returning(
+                    Role.id
+                )
+                result = await session.execute(smtm)
+                deleted_id_deleted = result.scalar_one_or_none()
+                await session.commit()
+                return deleted_id_deleted
+        except:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()

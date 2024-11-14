@@ -85,6 +85,13 @@ class IRoleRepository(ABC):
         """
         raise NotImplemented()
 
+    @abstractmethod
+    async def delete_by_id(self, role_id: str):
+        """
+        This abstract method is responsible for deleting the role on the database.
+        """
+        raise NotImplemented()
+
 class IPermissionRepository(ABC):
     """
     Interface responsible for RoleRepository main methods.
