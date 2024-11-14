@@ -76,6 +76,15 @@ class IRoleRepository(ABC):
         """
         raise NotImplemented()
 
+    @abstractmethod
+    async def find_by_id(self, role_id: str):
+        """
+        This abstract method is responsible for finding the role on the database and return it information.
+        :param role_id:
+        :return: a role information
+        """
+        raise NotImplemented()
+
 class IPermissionRepository(ABC):
     """
     Interface responsible for RoleRepository main methods.

@@ -80,13 +80,24 @@ class RoleRepository(IRoleRepository):
                 smtm = smtm.where(or_(*search_conditions))
 
             result = await session.execute(smtm)
-            fetched_users = result.unique().scalars()
-            users: List[RoleOutput] = []
+            fetched_roles = result.unique().scalars()
+            roles: List[RoleOutput] = []
 
-            for user in fetched_users.fetchall():
+            for user in fetched_roles.fetchall():
                 encoded = jsonable_encoder(user)
-                users.append(RoleOutput(**encoded))
+                roles.append(RoleOutput(**encoded))
 
-            return users
+            return roles
 
         return None
+
+    async def find_by_id(self, role_id: str):
+        session = async_sessionmaker(self.pg_engine)
+        async with session() as session:
+            smtm = select(Role).options(joinedload(Role.permission)).where(Role.id == role_id)
+            result = await session.execute(smtm)
+            role = result.unique().scalar_one_or_none()
+            encoded = jsonable_encoder(role)
+            if role is not None:
+                return RoleOutput(**encoded)
+            return None

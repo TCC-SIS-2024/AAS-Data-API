@@ -44,5 +44,5 @@ async def get_users(
     :return:
     """
 
-    response = await use_case.execute(page, page_size, request)
+    response = await use_case.execute(page, page_size, request=request)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)

@@ -19,6 +19,7 @@ from src.application.usecases.find_all_asset_administration_shells import FindAl
 from src.application.usecases.find_all_roles import FindAllRolesUseCase
 from src.application.usecases.find_all_users import FindAllUsersUseCase
 from src.application.usecases.find_asset_administration_shell_by_id import FindAssetAdministrationShellByIdUseCase
+from src.application.usecases.find_role_by_id import FindRoleByIdUseCase
 from src.application.usecases.get_asset_administration_shell_history_data import \
     GetAssetAdministrationShellHistoryDataUseCase
 from src.application.usecases.sign_in import SignInUseCase
@@ -196,6 +197,13 @@ def create_permission_use_case(repository: Annotated[PermissionRepository, Depen
     """
 
     return PermissionDecorator(CreatePermissionUseCase(repository), 'create')
+
+def find_role_by_id_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
+    """
+    function that injects the dependencies for FindRoleByIdUseCase
+    """
+
+    return PermissionDecorator(FindRoleByIdUseCase(repository), 'read')
 
 
 def get_aas_history_data_use_case(repository: Annotated[AASHistoryRepository, Depends(history_aas_data_repository)]):
