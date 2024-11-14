@@ -25,10 +25,10 @@ class FindAllRolesUseCase(UseCase):
         This method will get all roles' information.
         """
         try:
-            aas = await self.repository.find_all(page, page_size, search_input)
-            # total_qtd_aas = await self.repository.count_all_asset_administration_shells()
+            roles = await self.repository.find_all(page, page_size, search_input)
+            total_qtd_roles = await self.repository.count_roles()
 
-            pagination_response = PaginationResponse(data=aas, total=0)
+            pagination_response = PaginationResponse(data=roles, total=total_qtd_roles)
             return HttpHelper.ok(json.loads(pagination_response.model_dump_json()))
         except Exception as e:
             print_exc()

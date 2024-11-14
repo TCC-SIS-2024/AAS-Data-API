@@ -86,9 +86,27 @@ class IRoleRepository(ABC):
         raise NotImplemented()
 
     @abstractmethod
+    async def update_by_id(self, role: RoleInput, role_id: str):
+        """
+        This abstract method is responsible for updating the role on the database and return it information.
+        :param role:
+        :param role_id:
+        :return: a role information
+        """
+        raise NotImplemented()
+
+    @abstractmethod
     async def delete_by_id(self, role_id: str):
         """
         This abstract method is responsible for deleting the role on the database.
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def count_roles(self):
+        """
+        This abstract method is responsible for counting all roles on the database.
+        :return: number of roles
         """
         raise NotImplemented()
 

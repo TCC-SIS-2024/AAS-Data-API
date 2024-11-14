@@ -28,6 +28,7 @@ from src.application.usecases.sign_up import SignUpUseCase
 from src.application.usecases.system_status import SystemStatusUseCase
 from src.application.usecases.update_asset_administration_shell_by_id import \
     UpdateAssetAdministrationShellByIdUseCase
+from src.application.usecases.update_role_by_id import UpdateRoleByIdUseCase
 from src.application.usecases.users_me import UsersMeUseCase
 from src.infra.databases.pgdatabase import engine as postgres_engine
 from src.web.decorators import PermissionDecorator
@@ -212,6 +213,13 @@ def delete_role_by_id_use_case(repository: Annotated[RoleRepository, Depends(rol
     """
 
     return PermissionDecorator(DeleteRoleUseCase(repository), 'read')
+
+def update_role_by_id_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
+    """
+    function that injects the dependencies for UpdateRoleByIdUseCase
+    """
+
+    return PermissionDecorator(UpdateRoleByIdUseCase(repository), 'update')
 
 
 def get_aas_history_data_use_case(repository: Annotated[AASHistoryRepository, Depends(history_aas_data_repository)]):

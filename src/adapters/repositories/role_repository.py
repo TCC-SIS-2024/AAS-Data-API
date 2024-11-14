@@ -1,14 +1,11 @@
 from typing import Optional, Any, List
-
-from src.domain.entities.permission import PermissionOutput
 from src.domain.entities.role import RoleInput, RoleOutput
 from src.domain.interfaces.repositories import IRoleRepository
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
-from sqlalchemy import insert, select
 from sqlalchemy.orm import joinedload
-from src.infra.databases.pgdatabase import Role, Permission
+from src.infra.databases.pgdatabase import Role
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import insert, select, or_, delete
+from sqlalchemy import insert, select, or_, delete, update
 
 class RoleRepository(IRoleRepository):
 
@@ -113,6 +110,39 @@ class RoleRepository(IRoleRepository):
                 deleted_id_deleted = result.scalar_one_or_none()
                 await session.commit()
                 return deleted_id_deleted
+        except:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+    async def count_roles(self):
+        session = async_sessionmaker(self.pg_engine)
+
+        async with session() as session:
+            smtm = select(Role)
+            result = await session.execute(smtm)
+            roles_qtd = len(result.scalars().fetchall())
+            return roles_qtd
+
+        return None
+
+    async def update_by_id(self, role: RoleInput, role_id: str):
+        try:
+            session = async_sessionmaker(self.pg_engine, autoflush=False)
+            async with session() as session:
+                smtm = update(Role).values(
+                    name=role.name,
+                    permission_id=role.permission_id or None
+                ).where(Role.id == role_id).returning(Role)
+
+                result = await session.execute(smtm)
+                role = result.scalar_one_or_none()
+                updated_role = RoleOutput(**role.__dict__)
+                await session.commit()
+
+                if role is not None:
+                    return updated_role
         except:
             await session.rollback()
             raise

@@ -7,9 +7,10 @@ from src.application.usecases.create_role import CreateRoleUseCase
 from src.application.usecases.delete_role import DeleteRoleUseCase
 from src.application.usecases.find_all_roles import FindAllRolesUseCase
 from src.application.usecases.find_role_by_id import FindRoleByIdUseCase
+from src.application.usecases.update_role_by_id import UpdateRoleByIdUseCase
 from src.domain.entities.role import RoleInput
 from src.web.dependencies import get_token, create_role_use_case, get_all_roles_use_case, find_role_by_id_use_case, \
-    delete_role_by_id_use_case
+    delete_role_by_id_use_case, update_role_by_id_use_case
 
 roles_router = APIRouter(
     prefix="/roles",
@@ -69,6 +70,19 @@ async def get_role_by_id(
         use_case: Annotated[FindRoleByIdUseCase, Depends(find_role_by_id_use_case)]
 ):
     response = await use_case.execute(role_id=role_id, request=request)
+    return JSONResponse(content=response.model_dump(), status_code=response.status_code)
+
+@roles_router.put(
+    '/{role_id}',
+    summary="Route for updating asset administration shells stored in System."
+)
+async def update_asset_administration_shells(
+        request: Request,
+        role_id: Annotated[str, Path(...)],
+        role: Annotated[RoleInput, Body(...)],
+        use_case: Annotated[UpdateRoleByIdUseCase, Depends(update_role_by_id_use_case)]
+):
+    response = await use_case.execute(role_input=role, role_id=role_id, request=request)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
 @roles_router.delete(
