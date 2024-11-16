@@ -124,6 +124,48 @@ class IPermissionRepository(ABC):
         """
         raise NotImplemented()
 
+    @abstractmethod
+    async def find_all(self, page: int = 1, page_size: int = 10, search_input: Optional[Any] = None):
+        """
+        This abstract method is responsible for finding all roles on the database.
+        :return:
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def find_by_id(self, role_id: str):
+        """
+        This abstract method is responsible for finding the role on the database and return it information.
+        :param role_id:
+        :return: a role information
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def update_by_id(self, role: RoleInput, role_id: str):
+        """
+        This abstract method is responsible for updating the role on the database and return it information.
+        :param role:
+        :param role_id:
+        :return: a role information
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def delete_by_id(self, role_id: str):
+        """
+        This abstract method is responsible for deleting the role on the database.
+        """
+        raise NotImplemented()
+
+    @abstractmethod
+    async def count_roles(self):
+        """
+        This abstract method is responsible for counting all roles on the database.
+        :return: number of roles
+        """
+        raise NotImplemented()
+
 class ISystemRepository(ABC):
     """
     Interface responsible for SystemRepository main methods.

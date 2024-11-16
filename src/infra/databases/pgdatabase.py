@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import datetime
 
-from sqlalchemy import String, DateTime, Uuid, func, ForeignKey, Integer, Boolean
+from sqlalchemy import String, DateTime, Uuid, func, ForeignKey, Integer, Boolean, Table, Column
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
 from sqlalchemy.orm import DeclarativeBase
@@ -23,6 +23,13 @@ engine: AsyncEngine = create_async_engine(url)
 class Base(DeclarativeBase):
     pass
 
+role_permission_association = Table(
+    'role_permissions',
+    Base.metadata,
+    Column('role_id', ForeignKey('roles.id'), primary_key=True),
+    Column('permission_id', ForeignKey('permissions.id'), primary_key=True),
+)
+
 class User(Base):
     __tablename__ = 'users'
     id: Mapped[str] = MappedColumn(Uuid(), default=uuid.uuid4, unique=True, nullable=False, primary_key=True)
@@ -39,12 +46,15 @@ class Role(Base):
     __tablename__ = 'roles'
     id: Mapped[str] = MappedColumn(Uuid(), default=uuid.uuid4, unique=True, nullable=False, primary_key=True)
     name: Mapped[str] = MappedColumn(String(255), unique=True)
-    permission_id: Mapped[str] = MappedColumn(ForeignKey("permissions.id"), nullable=True)
-    permission: Mapped['Permission'] = relationship('Permission', back_populates='roles')
     created_at: Mapped[datetime] = MappedColumn(DateTime(timezone=True), default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = MappedColumn(DateTime(timezone=True), default=func.now(), onupdate=func.now(),
                                                 nullable=False)
     users: Mapped[List[User]] = relationship('User', back_populates='role')
+    permissions: Mapped[List['Permission']] = relationship(
+        'Permission',
+        secondary=role_permission_association,
+        back_populates='roles'
+    )
 
 class Permission(Base):
     __tablename__ = 'permissions'
@@ -54,7 +64,8 @@ class Permission(Base):
     updated_at: Mapped[datetime] = MappedColumn(DateTime(timezone=True), default=func.now(), onupdate=func.now(),
                                                 nullable=False)
 
-    roles: Mapped[List[Role]] = relationship('Role', back_populates='permission')
+    roles: Mapped[List[Role]] = relationship('Role',
+                                             back_populates='permissions', secondary=role_permission_association)
 
 class AssetAdministrationShell(Base):
     __tablename__ = 'asset_administration_shells'

@@ -12,7 +12,7 @@ class RoleInput(BaseModel):
     Role model representing a role in the application with additional fields for input.
     """
     name: str = Field(max_length=50, min_length=3)
-    permission_id: Optional[UUID] = None
+    permission_ids: Optional[List[UUID]] = None
 
 
 class RoleOutput(RoleInput):
@@ -22,7 +22,7 @@ class RoleOutput(RoleInput):
     id: UUID
     created_at: datetime
     updated_at: datetime
-    permission: Optional[PermissionOutput] = None
+    permissions: Optional[List[PermissionOutput]] = None
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,

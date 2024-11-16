@@ -45,7 +45,7 @@ class UserRepository(IUserRepository):
             offset = (page - 1) * page_size
 
             smtm = select(User).options(
-                joinedload(User.role).options(joinedload(Role.permission))
+                joinedload(User.role).options(joinedload(Role.permissions))
             ).limit(page_size).offset(offset)
 
             result = await session.execute(smtm)
@@ -74,7 +74,7 @@ class UserRepository(IUserRepository):
         session = async_sessionmaker(self.pg_engine)
 
         async with session() as session:
-            smtm = select(User).options(joinedload(User.role).options(joinedload(Role.permission))).where(User.email == email)
+            smtm = select(User).options(joinedload(User.role).options(joinedload(Role.permissions))).where(User.email == email)
             result = await session.execute(smtm)
 
             user = result.unique().scalar_one_or_none()

@@ -1,3 +1,4 @@
+import json
 import os
 from dataclasses import dataclass
 from datetime import timedelta
@@ -43,13 +44,23 @@ class SignIn:
 
     def generate_access_token(self, user: UserOutput):
         access_token_expires = timedelta(minutes=float(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES')))
-        access_token = self.encoder.create_access_token({
-            'sub': user.email,
-            'role': user.role.name,
-            'role_id': str(user.role.id),
-            'permissions': user.role.permission.value,
-            'permission_id': str(user.role.permission_id)
-        }, expires_delta=access_token_expires)
+        data = {'sub': user.email}
+
+        if user.role is not None:
+            data['role'] = user.role.name
+            data['role_id'] = str(user.role.id)
+            data['permissions'] = []
+            data['permission_ids'] = []
+
+            for permission in user.role.permissions:
+                loaded_permission = json.loads(permission.model_dump_json())
+                value = loaded_permission.get('value')
+                data['permissions'].append(value)
+
+            # for permission_id in user.role.permission_ids:
+            #     data['permission_ids'].append(str(permission_id))
+
+        access_token = self.encoder.create_access_token(data, expires_delta=access_token_expires)
         return Token(access_token=access_token, token_type='bearer').model_dump()
 
 

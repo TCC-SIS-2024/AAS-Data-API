@@ -33,7 +33,7 @@ async def create_role(
     :return:
     """
 
-    response = await use_case.execute(role_input=role, request=request)
+    response = await use_case.execute(role_input=role)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
 @roles_router.get(

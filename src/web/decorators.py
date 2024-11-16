@@ -20,10 +20,12 @@ class PermissionDecorator(PermissionUseCaseDecorator):
         request: Request = kwargs.pop('request')
 
         state = request.state.__dict__['_state']
-        permissions = state['permissions'].split(':')
+        permissions = state['permissions']
+
+        print(self.permission_to)
 
         if self.permission_to not in permissions:
-            return HttpHelper.forbidden(Exception(f'You do not have permission to {self.permission_to}'))
+            return HttpHelper.forbidden(Exception(f'You do not have permission to {self.permission_to} this resource'))
 
         result = await self.use_case.execute(**kwargs)
         return result

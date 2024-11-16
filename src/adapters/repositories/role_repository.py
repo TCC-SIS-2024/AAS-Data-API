@@ -3,7 +3,7 @@ from src.domain.entities.role import RoleInput, RoleOutput
 from src.domain.interfaces.repositories import IRoleRepository
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
 from sqlalchemy.orm import joinedload
-from src.infra.databases.pgdatabase import Role
+from src.infra.databases.pgdatabase import Role, Permission, role_permission_association
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import insert, select, or_, delete, update
 
@@ -22,18 +22,22 @@ class RoleRepository(IRoleRepository):
         try:
             session = async_sessionmaker(self.pg_engine, autoflush=False)
             async with session() as session:
-                smtm = insert(Role).values(
-                    name=role_input.name,
-                    permission_id=role_input.permission_id or None
-                ).returning(Role.id)
-
+                smtm = insert(Role).values(name=role_input.name).returning(Role.id)
                 result = await session.execute(smtm)
                 inserted_id = result.scalar_one_or_none()
-                await session.commit()
 
-                if inserted_id is not None:
+                if inserted_id is not None and role_input.permission_ids is not None:
+
+                    permission_smtm = insert(role_permission_association).values(
+                        [{"role_id": inserted_id, "permission_id": permission_id} for permission_id in role_input.permission_ids]
+                    )
+
+                    await session.execute(permission_smtm)
+
+                    await session.commit()
+
                     query = select(Role).options(
-                        joinedload(Role.permission),
+                        joinedload(Role.permissions),
                         joinedload(Role.users)
                     ).where(Role.id == inserted_id)
 
@@ -64,7 +68,7 @@ class RoleRepository(IRoleRepository):
             offset = (page - 1) * page_size
 
             smtm = select(Role).options(
-                joinedload(Role.permission)
+                joinedload(Role.permissions)
             ).limit(page_size).offset(offset)
 
             search_conditions = []
@@ -91,7 +95,7 @@ class RoleRepository(IRoleRepository):
     async def find_by_id(self, role_id: str):
         session = async_sessionmaker(self.pg_engine)
         async with session() as session:
-            smtm = select(Role).options(joinedload(Role.permission)).where(Role.id == role_id)
+            smtm = select(Role).options(joinedload(Role.permissions)).where(Role.id == role_id)
             result = await session.execute(smtm)
             role = result.unique().scalar_one_or_none()
             encoded = jsonable_encoder(role)

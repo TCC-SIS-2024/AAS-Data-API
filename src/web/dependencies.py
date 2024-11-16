@@ -114,7 +114,7 @@ def get_all_users_use_case(
     function that injects the dependencies for findAllUsersUseCase
     """
 
-    return PermissionDecorator(FindAllUsersUseCase(repository), 'read')
+    return PermissionDecorator(FindAllUsersUseCase(repository), 'user:read')
 
 def get_all_aas_use_case(
         repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]
@@ -123,7 +123,7 @@ def get_all_aas_use_case(
     function that injects the dependencies for FindAllAssetAdministrationShellsUseCase
     """
 
-    return PermissionDecorator(FindAllAssetAdministrationShellsUseCase(repository), 'read')
+    return PermissionDecorator(FindAllAssetAdministrationShellsUseCase(repository), 'aas:read')
 
 def get_all_roles_use_case(
         repository: Annotated[RoleRepository, Depends(role_repository)]
@@ -132,7 +132,7 @@ def get_all_roles_use_case(
     function that injects the dependencies for FindAllRolesUseCase
     """
 
-    return PermissionDecorator(FindAllRolesUseCase(repository), 'read')
+    return PermissionDecorator(FindAllRolesUseCase(repository), 'role:read')
 
 def sign_in_use_case(repository: Annotated[UserRepository, Depends(user_repository)]) -> SignInUseCase:
     """
@@ -163,63 +163,63 @@ def create_role_use_case(repository: Annotated[RoleRepository, Depends(role_repo
     function that injects the dependencies for CreateRoleUseCase
     """
 
-    return PermissionDecorator(CreateRoleUseCase(repository), 'read')
+    return PermissionDecorator(CreateRoleUseCase(repository), 'permission:read')
 
 def create_aas_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
     """
     function that injects the dependencies for CreateAssetAdministrationShellUseCase
     """
 
-    return PermissionDecorator(CreateAssetAdministrationShellUseCase(repository), 'create')
+    return PermissionDecorator(CreateAssetAdministrationShellUseCase(repository), 'aas:create')
 
 def delete_aas_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
     """
     function that injects the dependencies for DeleteAssetAdministrationShellUseCase
     """
 
-    return PermissionDecorator(DeleteAssetAdministrationShellUseCase(repository), 'delete')
+    return PermissionDecorator(DeleteAssetAdministrationShellUseCase(repository), 'aas:delete')
 
 def find_aas_by_id_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
     """
     function that injects the dependencies for FindAssetAdministrationShellByIdUseCase
     """
 
-    return PermissionDecorator(FindAssetAdministrationShellByIdUseCase(repository), 'read')
+    return PermissionDecorator(FindAssetAdministrationShellByIdUseCase(repository), 'aas:read')
 
 def update_aas_by_id_use_case(repository: Annotated[AssetAdministrationShellRepository, Depends(aas_repository)]):
     """
     function that injects the dependencies for UpdateAssetAdministrationShellByIdUseCase
     """
 
-    return PermissionDecorator(UpdateAssetAdministrationShellByIdUseCase(repository), 'update')
+    return PermissionDecorator(UpdateAssetAdministrationShellByIdUseCase(repository), 'aas:update')
 
 def create_permission_use_case(repository: Annotated[PermissionRepository, Depends(permission_repository)]):
     """
     function that injects the dependencies for CreatPermissionUseCase
     """
 
-    return PermissionDecorator(CreatePermissionUseCase(repository), 'create')
+    return PermissionDecorator(CreatePermissionUseCase(repository), 'permission:create')
 
 def find_role_by_id_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
     """
     function that injects the dependencies for FindRoleByIdUseCase
     """
 
-    return PermissionDecorator(FindRoleByIdUseCase(repository), 'read')
+    return PermissionDecorator(FindRoleByIdUseCase(repository), 'role:read')
 
 def delete_role_by_id_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
     """
     function that injects the dependencies for DeleteRoleUseCase
     """
 
-    return PermissionDecorator(DeleteRoleUseCase(repository), 'read')
+    return PermissionDecorator(DeleteRoleUseCase(repository), 'role:read')
 
 def update_role_by_id_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
     """
     function that injects the dependencies for UpdateRoleByIdUseCase
     """
 
-    return PermissionDecorator(UpdateRoleByIdUseCase(repository), 'update')
+    return PermissionDecorator(UpdateRoleByIdUseCase(repository), 'role:update')
 
 
 def get_aas_history_data_use_case(repository: Annotated[AASHistoryRepository, Depends(history_aas_data_repository)]):
@@ -227,4 +227,4 @@ def get_aas_history_data_use_case(repository: Annotated[AASHistoryRepository, De
     function that injects the dependencies for GetAssetAdministrationShellHistoryData
     """
 
-    return PermissionDecorator(GetAssetAdministrationShellHistoryDataUseCase(repository), 'read')
+    return PermissionDecorator(GetAssetAdministrationShellHistoryDataUseCase(repository), 'history:read')
