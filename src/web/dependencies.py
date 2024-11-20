@@ -17,6 +17,7 @@ from src.application.usecases.create_role import CreateRoleUseCase
 from src.application.usecases.create_user import CreateUserUseCase
 from src.application.usecases.delete_asset_administration_shell import DeleteAssetAdministrationShellUseCase
 from src.application.usecases.delete_role import DeleteRoleUseCase
+from src.application.usecases.delete_user import DeleteUserUseCase
 from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
 from src.application.usecases.find_all_permissions import FindAllPermissionsUseCase
 from src.application.usecases.find_all_roles import FindAllRolesUseCase
@@ -170,6 +171,13 @@ def create_user_use_case(
     """
 
     return PermissionDecorator(CreateUserUseCase(repository, encoder), 'user:create')
+
+def delete_user_use_case(repository: Annotated[UserRepository, Depends(user_repository)]):
+    """
+    function that injects the dependencies for DeleteUserUseCase
+    """
+
+    return PermissionDecorator(DeleteUserUseCase(repository), 'user:delete')
 
 def create_role_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
     """

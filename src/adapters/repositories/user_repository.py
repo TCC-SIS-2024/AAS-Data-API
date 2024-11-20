@@ -144,3 +144,30 @@ class UserRepository(IUserRepository):
         finally:
             await session.close()
 
+    async def delete_by_id(self, user_id: str):
+        try:
+            session = async_sessionmaker(self.pg_engine)
+            async with session() as session:
+                smtm = delete(User).where(User.id == user_id).returning(
+                    User.id
+                )
+                result = await session.execute(smtm)
+                user_id_deleted = result.scalar_one_or_none()
+                await session.commit()
+                return user_id_deleted
+        except:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+    async def find_by_id(self, user_id: str):
+        session = async_sessionmaker(self.pg_engine)
+        async with session() as session:
+            smtm = select(User).where(User.id == user_id)
+            result = await session.execute(smtm)
+            permission = result.scalar_one_or_none()
+            if permission is not None:
+                return UserOutput(**permission.__dict__)
+            return None
+
