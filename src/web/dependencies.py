@@ -25,6 +25,7 @@ from src.application.usecases.find_all_users import FindAllUsersUseCase
 from src.application.usecases.find_asset_administration_shell_by_id import FindAssetAdministrationShellByIdUseCase
 from src.application.usecases.find_permission_id import FindPermissionByIdUseCase
 from src.application.usecases.find_role_by_id import FindRoleByIdUseCase
+from src.application.usecases.find_user_by_id import FindUserByIdUseCase
 from src.application.usecases.get_asset_administration_shell_history_data import \
     GetAssetAdministrationShellHistoryDataUseCase
 from src.application.usecases.sign_in import SignInUseCase
@@ -178,6 +179,13 @@ def delete_user_use_case(repository: Annotated[UserRepository, Depends(user_repo
     """
 
     return PermissionDecorator(DeleteUserUseCase(repository), 'user:delete')
+
+def find_user_by_id_use_case(repository: Annotated[UserRepository, Depends(user_repository)]):
+    """
+    function that injects the dependencies for FindUserByIdUseCase
+    """
+
+    return PermissionDecorator(FindUserByIdUseCase(repository), 'user:read')
 
 def create_role_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
     """

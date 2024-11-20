@@ -164,10 +164,12 @@ class UserRepository(IUserRepository):
     async def find_by_id(self, user_id: str):
         session = async_sessionmaker(self.pg_engine)
         async with session() as session:
-            smtm = select(User).where(User.id == user_id)
+            smtm = select(User).options(joinedload(User.role).options(joinedload(Role.permissions))).where(User.id == user_id)
             result = await session.execute(smtm)
-            permission = result.scalar_one_or_none()
-            if permission is not None:
-                return UserOutput(**permission.__dict__)
+            user = result.unique().scalar_one_or_none()
+            encoded = jsonable_encoder(user)
+
+            if user is not None:
+                return UserOutput(**encoded)
             return None
 
