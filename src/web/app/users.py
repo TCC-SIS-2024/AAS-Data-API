@@ -1,11 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Query
+from fastapi import APIRouter, Depends, Request, Query, Body
 from fastapi.responses import JSONResponse
 
+from src.application.usecases.create_user import CreateUserUseCase
 from src.application.usecases.find_all_users import FindAllUsersUseCase
 from src.application.usecases.users_me import UsersMeUseCase
-from src.web.dependencies import get_current_user_use_case, get_token, get_all_users_use_case
+from src.domain.entities.user import UserInput
+from src.web.dependencies import get_current_user_use_case, get_token, get_all_users_use_case, create_user_use_case
 
 users_router = APIRouter(
     prefix="/users",
@@ -44,5 +46,21 @@ async def get_users(
     :return:
     """
 
-    response = await use_case.execute(page, page_size, request=request)
+    response = await use_case.execute(page=page, page_size=page_size, request=request)
+    return JSONResponse(content=response.model_dump(), status_code=response.status_code)
+
+@users_router.post('/', summary='Route for registering user in the System.')
+async def create_user(
+        request: Request,
+        user_input: Annotated[UserInput, Body(...)],
+        use_case: Annotated[CreateUserUseCase, Depends(create_user_use_case)]
+):
+    """
+    This method is used to register user by a decorated Fast API route.
+    :param user_input: user information to be stored.
+    :param use_case: use case class for registration the user. (execute)
+    :return:
+    """
+
+    response = await use_case.execute(user_input=user_input, request=request)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)

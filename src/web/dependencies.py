@@ -14,6 +14,7 @@ from src.adapters.repositories.user_repository import UserRepository
 from src.application.usecases.create_asset_administration_shell import CreateAssetAdministrationShellUseCase
 from src.application.usecases.create_permission import CreatePermissionUseCase
 from src.application.usecases.create_role import CreateRoleUseCase
+from src.application.usecases.create_user import CreateUserUseCase
 from src.application.usecases.delete_asset_administration_shell import DeleteAssetAdministrationShellUseCase
 from src.application.usecases.delete_role import DeleteRoleUseCase
 from src.application.usecases.find_all_asset_administration_shells import FindAllAssetAdministrationShellsUseCase
@@ -159,6 +160,16 @@ def system_use_case(repository: Annotated[SystemRepository, Depends(system_repos
     """
 
     return SystemStatusUseCase(repository)
+
+def create_user_use_case(
+        repository: Annotated[UserRepository, Depends(user_repository)],
+        encoder: Annotated[BcryptAdapter, Depends(jwt_encoder)],
+) -> PermissionDecorator:
+    """
+    function that injects the dependencies for CreateUserUseCase
+    """
+
+    return PermissionDecorator(CreateUserUseCase(repository, encoder), 'user:create')
 
 def create_role_use_case(repository: Annotated[RoleRepository, Depends(role_repository)]):
     """
