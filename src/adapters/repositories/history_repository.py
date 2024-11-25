@@ -18,7 +18,7 @@ class AASHistoryRepository(IAASHistoryData):
             endpoint_info_dict = json.loads(endpoint_info_as_json)
 
             connection_params = {
-                "host": '0.0.0.0',
+                "host": endpoint_info_dict['database_host'],
                 "port": endpoint_info_dict['database_port'],
                 "user": endpoint_info_dict['database_user'],
                 "password": endpoint_info_dict['database_password']

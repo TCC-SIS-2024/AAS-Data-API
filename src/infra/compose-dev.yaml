@@ -6,6 +6,8 @@ services:
       - '5432:5432'
     env_file:
       - '../../.env.development'
+    networks:
+      - monitoring-network
 
   monitoring-api:
     build:
@@ -18,3 +20,10 @@ services:
       - '../../.env.development'
     depends_on:
       - monitoring-api-database
+    networks:
+      - monitoring-network
+
+networks:
+  monitoring-network:
+    name: monitoring-network
+    driver: bridge
