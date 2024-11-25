@@ -15,7 +15,8 @@ INSERT INTO public.permissions (id,value,created_at,updated_at) VALUES
 	 ('3fc513ad-4f07-4e5b-a9fe-b516b0966d7c'::uuid,'user:delete','2024-11-16 01:44:14.166108-04','2024-11-16 01:44:14.166108-04'),
 	 ('2e8036c1-f473-4c17-b0ca-98d31c0c7f8e'::uuid,'user:read','2024-11-16 01:44:20.436125-04','2024-11-16 01:44:20.436125-04'),
 	 ('5e188c82-4650-4322-9516-c6895f7c99b8'::uuid,'user:update','2024-11-16 01:44:26.89629-04','2024-11-16 01:44:26.89629-04'),
-	 ('124610f6-7be9-4a95-9422-70b708f2b11d'::uuid,'user:create','2024-11-16 01:44:36.194953-04','2024-11-16 01:44:36.194953-04');
+	 ('124610f6-7be9-4a95-9422-70b708f2b11d'::uuid,'user:create','2024-11-16 01:44:36.194953-04','2024-11-16 01:44:36.194953-04'),
+	 ('7464362a-276d-4421-b475-3b5c8c5f45a8'::uuid,'history:read','2024-11-16 01:44:36.194953-04','2024-11-16 01:44:36.194953-04');
 
 INSERT INTO public.roles
 (id, "name", created_at, updated_at)
@@ -24,6 +25,7 @@ VALUES('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', 'admin', '2024-11-15 23:52:26.309
 INSERT INTO public.role_permissions (role_id, permission_id) VALUES
 ('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', 'a5d71923-c001-4184-9dd6-a77c89131f24'),
 ('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', 'e13993a3-2d01-48fa-ad9f-06d1fff29ddc'),
+('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', '7464362a-276d-4421-b475-3b5c8c5f45a8'),
 ('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', '7a131707-93ab-4f7a-b119-88d2d43a4625'),
 ('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', '7f26f2b5-39a6-4943-b5da-626d52472613'),
 ('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', '57cc4ea9-f2f5-4cd6-bb6f-474131f207f0'),
@@ -38,3 +40,8 @@ INSERT INTO public.role_permissions (role_id, permission_id) VALUES
 ('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', '2e8036c1-f473-4c17-b0ca-98d31c0c7f8e'),
 ('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', '5e188c82-4650-4322-9516-c6895f7c99b8'),
 ('93a9731d-3f1c-4ef5-b0f5-bf4b9d180535', '124610f6-7be9-4a95-9422-70b708f2b11d');
+
+INSERT INTO public.users (id, "username", "email", "password", "role_id", "created_at", "updated_at") VALUES (
+'ba596d82-8f5f-4a91-aba4-5750566680df', 'lucas', 'lucas@email.com',
+'$2b$12$ktPH/4FKyuEf/BUUpkqcpert0.EWwaKi34S7.hz3vkd0mnlY.BIc.', '93a9731d-3f1c-4ef5-b0f5-bf4b9d180535',
+'2024-11-25 00:07:32.975968+00', '2024-11-25 00:07:32.975968+00');
